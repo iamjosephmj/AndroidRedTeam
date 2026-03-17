@@ -263,13 +263,14 @@ nav.sidebar a[aria-current='true'] {
 .sl-markdown-content li p { margin-bottom: 0.5rem; }
 .sl-markdown-content li::marker { color: var(--sl-color-gray-3); }
 
-.sl-heading-wrapper {
+.sl-markdown-content .sl-heading-wrapper {
 	--sl-anchor-icon-size: 0.6em;
-	--sl-anchor-icon-gap: 0.125em;
+	--sl-anchor-icon-gap: 0.15em;
 }
 
-.sl-heading-wrapper .sl-anchor-icon > svg {
-	transform: translateY(calc((var(--sl-line-height-headings) * 1em - var(--sl-anchor-icon-size)) / 2 - 2px));
+.sl-markdown-content .sl-heading-wrapper .sl-anchor-icon > svg {
+	width: var(--sl-anchor-icon-size);
+	transform: translateY(calc((var(--sl-line-height-headings) * 1em - var(--sl-anchor-icon-size)) / 2 - 1px));
 	margin-inline-start: 2px;
 }
 
