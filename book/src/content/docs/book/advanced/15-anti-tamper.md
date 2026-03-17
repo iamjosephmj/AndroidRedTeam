@@ -1202,6 +1202,8 @@ Anti-tamper defenses are speed bumps, not walls. They slow you down, they force 
 
 The real question is not whether you can defeat the defenses. It is how quickly you can identify and neutralize all of them without breaking the app. That is a skill you build through practice. The recon patterns in this chapter will find the checks. The decision flowchart will tell you which technique to apply. The worked example shows the full workflow from recon to verified evasion. Do it ten times and it becomes mechanical. Do it fifty times and you will identify defenses from the grep output alone, without even opening the smali file.
 
+**A note on RASP-protected targets:** Commercial RASP SDKs (Guardsquare, Promon, Appdome, Zimperium, Talsec) bundle many of the individual checks described in this chapter into a single obfuscated, native-backed package. Instead of 3-5 findable check methods, RASP sprays 50-200 integrity checks across the entire codebase, inserts decoy control flows to waste your analysis time, and couples integrity state to processing outputs so tampered builds fail silently rather than crashing. When you encounter a RASP-protected target during an authorized assessment, expect the recon and evasion effort to be 5-10x higher than an unprotected app. See Chapter 17, Section 7 for the full technical breakdown of RASP techniques and their limitations.
+
 **Practice:** Lab 10 (Anti-Tamper Evasion) provides hands-on exercises **assessing** signature checks, DEX integrity validation, and certificate pinning on authorized targets.
 
 The next chapter covers automation -- building pipelines that handle the mechanical steps so you can focus on the parts that require judgment.

@@ -764,6 +764,238 @@ Use the Play Integrity API (successor to SafetyNet). See the full Kotlin impleme
 
 **Limitation:** Can be bypassed on rooted devices with module frameworks. Should be combined with other defenses.
 
+### 7. RASP — Runtime Application Self-Protection (Critical)
+
+> **Implementation effort:** Low if using a commercial SDK (drop-in integration, 1-2 days). High if building custom (months of engineering). Impact: raises the per-check bypass cost from seconds to hours.
+
+**Impact: Transforms individual, findable checks into a distributed, obfuscated, native-backed defense system that resists systematic neutralization.**
+
+RASP is not a single check — it is an SDK that embeds into your app at build time and actively monitors for tampering, repackaging, debugging, and environmental anomalies at runtime. Unlike the individual defenses above (each of which an attacker can find, understand, and nop in a single smali edit), RASP bundles dozens of techniques into an obfuscated package where no single method removal disables the protection.
+
+Commercial RASP solutions include Guardsquare (DexGuard/iXGuard), Promon SHIELD, Appdome, Zimperium zShield, and Talsec freeRASP (open source). The specific implementation varies, but the techniques below are common across the category.
+
+#### a) Resource Hashing and Distributed Signature Verification
+
+RASP computes hashes of APK resources, DEX files, and the signing certificate at runtime, comparing against embedded expected values. Unlike a single `checkSignature()` method that an attacker can grep for and nop, RASP distributes these checks across dozens of call sites with obfuscated comparison logic. The hash values themselves are encrypted and scattered across multiple classes. There is no single constant to patch, no single method to disable.
+
+#### b) Dynamic Check Spraying
+
+Traditional integrity checks live in predictable locations — `Application.attachBaseContext()`, an `onCreate()` call, or a dedicated `SecurityManager` class. An attacker finds 1-3 call sites and patches them out.
+
+RASP rewrites the app's bytecode during the build phase, injecting verification calls at random points throughout the codebase. Every Activity, Fragment, Service, and even utility class can carry a sprayed check. The attacker cannot grep for a single entry point — they must trace every class.
+
+```text
+Traditional integrity checking:
+
+  Application.onCreate()
+       |
+       +-- checkSignature()    <-- single point of failure
+       |
+       +-- app continues
+
+
+RASP check spraying:
+
+  Application.onCreate()         LoginActivity.onResume()
+       |                              |
+       +-- [check #1]                 +-- [check #14]
+       |                              |
+  HomeFragment.onViewCreated()   PaymentService.process()
+       |                              |
+       +-- [check #7]                 +-- [check #31]
+       |                              |
+  CameraAnalyzer.analyze()       Utils.formatDate()
+       |                              |
+       +-- [check #22]                +-- [check #48]
+
+  ... 50-200 checks sprayed across the entire class graph
+  ... each obfuscated, each with different comparison logic
+  ... removing one still leaves 49-199 active
+```
+
+The attacker's recon cost scales linearly with the number of sprayed checks. Finding and neutralizing 3 checks takes minutes. Finding and neutralizing 200 takes days — and missing even one triggers a response.
+
+#### c) Decoy Control Flows
+
+RASP inserts bogus branches, dead-code paths, and misleading method names that look like real integrity checks but do nothing — or that look like normal app logic but are actually checks. Reverse engineers following control flow waste time on decoys.
+
+```text
+Original method:
+
+  processFrame(frame)
+       |
+       +-- runLivenessModel(frame)
+       |
+       +-- return score
+
+
+After RASP processing:
+
+  processFrame(frame)
+       |
+       +-- if (opaqueCondition_a7x())     <-- always true, looks data-dependent
+       |       |
+       |       +-- validateResource_m3()   <-- real check, disguised as util
+       |       |
+       |       +-- runLivenessModel(frame)
+       |
+       +-- else
+       |       |
+       |       +-- checkIntegrity_fake()   <-- decoy, does nothing
+       |       |
+       |       +-- runLivenessModel(frame) <-- dead code, never reached
+       |
+       +-- if (opaqueCondition_k9p())      <-- always false
+       |       |
+       |       +-- reportTamper()          <-- decoy
+       |
+       +-- computeScore(frame, ctx)        <-- real, but "ctx" carries
+       |                                       integrity state silently
+       +-- return score
+```
+
+Opaque predicates — conditions that always evaluate one way but appear data-dependent — force the analyst to trace through each branch to determine which path is live. The goal: increase the time-per-check from seconds to minutes, and make the analyst uncertain whether they have found all real checks.
+
+#### d) Native (.so) Layer Enforcement
+
+RASP SDKs implement their core integrity engine in compiled native code (C/C++), called via JNI. Native code is fundamentally harder to reverse than smali:
+
+- No clean decompilation to source (IDA/Ghidra produce pseudocode, not original source)
+- Binary patching requires understanding ARM/x86 assembly, not text editing
+- Anti-debugging techniques work at the OS level (ptrace self-attach, timing checks, `/proc/self/status` monitoring)
+
+```text
+┌─────────────────────────────────────────────┐
+│                  Java / Smali                │
+│                                              │
+│   Activity.onCreate()                        │
+│       |                                      │
+│       +-- RaspBridge.verify()   ─── JNI ───┐ │
+│       |                                    │ │
+│   CameraAnalyzer.analyze()                 │ │
+│       |                                    │ │
+│       +-- RaspBridge.getState() ─── JNI ─┐ │ │
+│                                          │ │ │
+├──────────────────────────────────────────┤ │ │
+│              Native (.so)                │ │ │
+│                                          │ │ │
+│   rasp_verify():  ◄─────────────────────┘ │ │
+│       +-- hash DEX files                   │ │
+│       +-- check signature                  │ │
+│       +-- scan /proc/self/status           │ │
+│       +-- ptrace(PTRACE_TRACEME)           │ │
+│       +-- timing check                     │ │
+│       +-- return integrity_state  ◄────────┘ │
+│                                              │
+│   Even if ALL smali checks are removed,      │
+│   the native layer independently detects     │
+│   tampering and controls integrity_state.    │
+└──────────────────────────────────────────────┘
+```
+
+The key insight: the native layer does not just report results — it controls an internal `integrity_state` value that downstream processing depends on. Removing the JNI calls from smali does not fix the problem; it removes the state initialization, which defaults to "tampered."
+
+#### e) Integrity-Coupled Processing: Play Integrity + RASP (Silent Failure)
+
+This is the most sophisticated and hardest-to-debug technique. RASP queries Google Play Integrity API at startup or on key user actions and feeds the attestation verdict into its own decision engine. If Play Integrity returns `UNRECOGNIZED_VERSION` (repackaged APK) or fails device integrity, RASP does **not** crash the app.
+
+Instead, it silently corrupts downstream processing.
+
+```text
+Legitimate build:
+
+  Play Integrity ──► MEETS_DEVICE_INTEGRITY
+       |
+  RASP engine ──► integrity_state = VALID
+       |
+  Face processing:
+       score = model.predict(frame) * confidence_modifier(VALID)
+       score = 0.94 * 1.0 = 0.94
+       |
+  Server ──► score >= 0.90 ──► ACCEPT ✓
+
+
+Tampered build:
+
+  Play Integrity ──► UNRECOGNIZED_VERSION
+       |
+  RASP engine ──► integrity_state = TAMPERED
+       |
+  Face processing:
+       score = model.predict(frame) * confidence_modifier(TAMPERED)
+       score = 0.94 * 0.68 = 0.64
+       |
+  Server ──► score < 0.90 ──► REJECT ✗
+
+  No crash. No error log. No stack trace.
+  App UI shows "processing..." then "verification failed."
+  Attacker cannot distinguish from poor injection quality.
+```
+
+The attacker sees frames being delivered, sees the SDK "working," but every session fails server-side validation. They cannot tell whether the failure is their injection quality, a server-side model issue, or a hidden integrity check. There is no crash to analyze, no exception to trace, no logcat line pointing to the defense. Play Integrity provides the ground truth ("is this a legitimate build on a genuine device?"); RASP translates that truth into a silent, distributed response that the attacker must reverse-engineer from behavioral observation alone.
+
+This is far harder to defeat than any crash-on-tamper approach.
+
+#### f) Runtime String Encryption
+
+All sensitive strings — API endpoints, SDK keys, expected hash values, error messages — are encrypted in the DEX file and decrypted only at runtime using a key derived from the app's integrity state (typically the signing certificate hash).
+
+```text
+Original (no RASP):
+
+  DEX contains: "https://api.liveness.com/v2/verify"
+  Attacker runs: strings classes.dex | grep api
+  Result:        endpoint found in 2 seconds
+
+
+With RASP string encryption:
+
+  DEX contains: 0xA7F3...2B1E  (encrypted blob)
+       |
+  Runtime decryption:
+       key = deriveKey(getSigningCertHash())
+       |
+       +-- Legitimate APK:
+       |     certHash = "sha256/ABC123..."
+       |     key = correct_key
+       |     decrypt(blob, key) = "https://api.liveness.com/v2/verify" ✓
+       |
+       +-- Repackaged APK:
+             certHash = "sha256/XYZ789..."  (different signer)
+             key = wrong_key
+             decrypt(blob, key) = "ht%ps://g8i.mzv3ness.c0m/v2/vxrify"
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                   Garbage, but no DecryptionException.
+                                   App tries to call this URL.
+                                   Server returns 404 or DNS fails.
+                                   No crash. Just silent malfunction.
+```
+
+Static analysis is useless (all strings are encrypted). Dynamic analysis on a patched build is misleading (strings decrypt to wrong values). The attacker must either find and replicate the key derivation logic or extract decrypted strings from memory on a legitimate build — both of which require significantly more effort than grepping for plaintext.
+
+#### g) Anti-Debug and Environment Detection
+
+RASP monitors for debugger attachment and non-standard execution environments using techniques that operate at the OS level:
+
+- `Debug.isDebuggerConnected()` called from native code (harder to hook than the Java-level check)
+- ptrace self-attachment — the process attaches to itself as a debugger, preventing external debuggers from attaching (only one tracer per process)
+- `/proc/self/status` monitoring — reads `TracerPid` to detect if another process is tracing this one
+- Timing-based detection — integrity checks measure their own execution time; single-stepping through a debugger causes measurable slowdowns that trigger a tamper response
+
+These checks run on background threads at randomized intervals, making them difficult to predict and pre-empt.
+
+#### Limitations
+
+RASP is powerful but not invulnerable. An honest assessment:
+
+- **Still client-side.** RASP runs on a device the attacker controls. A sufficiently motivated reverse engineer with enough time can defeat any client-side protection.
+- **Cost, not impossibility.** The value is cost multiplication. RASP turns a 30-minute bypass into a multi-day reverse engineering project. For most attackers, that economic shift is decisive. For a nation-state, it is not.
+- **Size and performance.** RASP adds 2-5 MB to APK size and 50-200ms to startup latency. For most apps this is acceptable; for performance-critical apps, measure carefully.
+- **False positives.** Over-aggressive RASP can trigger on legitimate devices — custom ROMs, accessibility services, enterprise MDM agents. Test extensively across device populations before shipping.
+- **Maintenance.** RASP SDKs require updates as new Android versions change system internals. Budget for ongoing vendor relationship or internal maintenance.
+
+The correct framing: RASP does not make bypass impossible. It makes bypass **expensive enough** that the attacker's cost exceeds the value of the fraud. Combined with server-side liveness (Defense 1) and Play Integrity (Defense 6), RASP creates a three-layer system where the attacker must simultaneously defeat client integrity, server challenges, and device attestation.
+
 ---
 
 ## Writing the Findings Report
@@ -817,15 +1049,15 @@ Specific, actionable fix with priority and effort estimate.
 
 This chapter presented detection at three levels -- APK integrity, runtime behavior, and statistical analysis -- along with working implementations for each. Here is what matters most:
 
-**For defenders:** Start with the Critical items: signature verification and DEX integrity. These are cheap, reliable, and hard to evade. Then add server-side liveness verification -- it is the single defense that changes the economics of attack most dramatically. Everything else is valuable defense-in-depth, but those three investments give you the highest return.
+**For defenders:** Start with the Critical items: signature verification, DEX integrity, and RASP integration. These are reliable and hard to evade systematically. Then add server-side liveness verification -- it is the single defense that changes the economics of attack most dramatically. RASP multiplies the cost of every other defense by making individual checks harder to find, understand, and neutralize. Everything else is valuable defense-in-depth, but those four investments give you the highest return.
 
-**For red teamers:** Every detection listed here is something you should test for during reconnaissance. Before you launch a patched APK, ask: does this target check signatures? Does it verify DEX integrity? Does it pin certificates? Does it use server-side liveness? The answers determine whether your standard injection pipeline works out of the box or whether you need the evasion techniques from Chapter 15. Knowing the defenses changes your operational approach. That is why this chapter exists in a red team book.
+**For red teamers:** Every detection listed here is something you should test for during reconnaissance. Before you launch a patched APK, ask: does this target check signatures? Does it verify DEX integrity? Does it pin certificates? Does it use server-side liveness? Does it use a RASP SDK? The answers determine whether your standard injection pipeline works out of the box or whether you need the evasion techniques from Chapter 15. RASP-protected targets require significantly more recon time — expect 5-10x the effort of an unprotected app. Knowing the defenses changes your operational approach. That is why this chapter exists in a red team book.
 
 The arms race between attack and detection is continuous. Every defense in this chapter has been bypassed at least once in practice. Every bypass has been detected and patched. The goal is not to build an unbreakable wall -- it is to make the wall expensive enough that the attacker moves to a softer target.
 
 **Practice:** Lab 13 (Defend and Attack) has you add defense layers to a target app and then systematically bypass them.
 
-Next: Chapter 18 builds on the detection techniques here with a complete defense-in-depth architecture -- a five-layer model that combines device attestation, APK integrity, certificate pinning, server-side liveness, and behavioral analysis into a resilient verification system.
+Next: Chapter 18 builds on the detection techniques here with a complete defense-in-depth architecture -- combining device attestation, APK integrity, certificate pinning, server-side liveness, RASP, and behavioral analysis into a resilient verification system.
 
 ---
 

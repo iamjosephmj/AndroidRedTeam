@@ -77,6 +77,30 @@ Defense-in-depth is not a list of checks. It is an architecture where each layer
 
 **Bypass difficulty:** Medium. A determined attacker with access to the detection parameters can tune their injection to match expected statistical profiles. The defense value comes from obscurity (the attacker does not know your exact thresholds) and from combining it with other layers (the attacker must simultaneously defeat behavioral analysis and server-side liveness, which imposes conflicting constraints).
 
+### RASP as a Cross-Cutting Layer
+
+RASP (Runtime Application Self-Protection) is not a sixth layer — it is a force multiplier that reinforces Layers 1, 2, and 5 simultaneously. Where each layer above is a single defense that can be individually located and neutralized, RASP makes that process dramatically harder by distributing checks, obfuscating logic, and coupling integrity state to processing outcomes.
+
+Without RASP, the attacker's workflow is methodical: find `checkSignature()`, nop it. Find `verifyDexIntegrity()`, nop it. Find the certificate pin, remove it. Each check is a single method, a single smali edit, a few minutes of work. Three checks, fifteen minutes, done.
+
+With RASP, the same attacker faces a fundamentally different problem:
+
+```text
+Without RASP:                          With RASP:
+
+  3 checks to find                       50-200 sprayed checks
+  Each in a named method                 Obfuscated, scattered across classes
+  Pure Java/smali                        Core engine in native .so
+  Crash on detection (debuggable)        Silent failure (no crash trace)
+  Static strings (greppable)             Encrypted, integrity-keyed decryption
+  
+  Bypass time: 15-30 minutes             Bypass time: days to weeks
+```
+
+The critical technique is **integrity-coupled processing** (Chapter 17, Defense 7e): RASP feeds Play Integrity verdicts into the app's processing pipeline, silently degrading outputs on tampered builds. The attacker sees the app running, sees frames being processed, but every session fails server-side — and there is no crash, no log, and no stack trace pointing to the cause. Combined with server-side liveness (Layer 4), this creates a system where the attacker must defeat both client integrity and server challenges simultaneously, with no debuggable feedback from either.
+
+See Chapter 17, Section 7 for the full technical breakdown of each RASP technique.
+
 ---
 
 ## Server-Side Liveness Design Patterns
@@ -296,7 +320,7 @@ Chapter 1 opened with a thirty-second interaction: a user opens a banking app, p
 
 The defense is not to make fabrication impossible. It is to make fabrication expensive.
 
-Device attestation forces the attacker to acquire and root a real device. APK integrity forces them to find and patch every verification check. Certificate pinning forces them to modify native code. Server-side liveness forces them to generate real-time responses to unpredictable challenges. Behavioral analysis forces them to match the statistical fingerprint of legitimate sessions. Each layer alone can be defeated. Together, they impose a cost that scales with the number of layers and the quality of each implementation.
+Device attestation forces the attacker to acquire and root a real device. APK integrity forces them to find and patch every verification check. Certificate pinning forces them to modify native code. Server-side liveness forces them to generate real-time responses to unpredictable challenges. RASP multiplies every layer — spraying checks across the codebase, pushing logic into native code, and silently degrading processing on tampered builds so the attacker gets no crash trace to follow. Behavioral analysis forces them to match the statistical fingerprint of legitimate sessions. Each layer alone can be defeated. Together, they impose a cost that scales with the number of layers and the quality of each implementation.
 
 The arms race between attack and defense is continuous. The techniques in this book will evolve. New injection methods will emerge. New defenses will be built. New bypasses will be discovered. That cycle is the nature of security work. But defense-in-depth ensures that the cost of attack remains high, that each new bypass requires fresh investment, and that the economics consistently favor the defender who has built resilience into their architecture rather than relying on any single wall.
 
@@ -311,3 +335,5 @@ Build the layers. Test the layers. Fix the layers. Repeat.
 - [NIST SP 800-63B Section 5.2.3](https://pages.nist.gov/800-63-3/sp800-63b.html) -- biometric verification requirements
 - [Android Network Security Configuration](https://developer.android.com/privacy-and-security/security-config) -- certificate pinning via XML configuration
 - [FIDO Alliance Biometric Certification](https://fidoalliance.org/certification/biometric-component-certification/) -- biometric performance and presentation attack detection standards
+- [OWASP MASVS-RESILIENCE](https://mas.owasp.org/MASVS/09-MASVS-RESILIENCE/) -- mobile app resilience against reverse engineering and tampering
+- [freeRASP by Talsec](https://github.com/nicolgit/free-rasp) -- open-source RASP reference implementation for Android and iOS
