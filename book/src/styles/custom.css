@@ -1,39 +1,35 @@
 /* ============================================================
-   Android Red Team — Custom Starlight Theme
-   Inspired by Material for MkDocs: clean, spacious, focused.
+   Android Red Team — Purple Cyberpunk Theme
    ============================================================ */
 
 /* --- Dark theme (default) --- */
 :root {
-	--sl-color-accent-low: #1c0a0a;
-	--sl-color-accent: #ef4444;
-	--sl-color-accent-high: #fecaca;
-	--sl-color-white: #f1f5f9;
-	--sl-color-gray-1: #cbd5e1;
-	--sl-color-gray-2: #94a3b8;
-	--sl-color-gray-3: #64748b;
-	--sl-color-gray-4: #334155;
-	--sl-color-gray-5: #1e293b;
-	--sl-color-gray-6: #0f172a;
-	--sl-color-black: #020617;
-	--sl-font-system:
-		-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-		'Helvetica Neue', Arial, sans-serif;
+	--sl-color-accent-low: #1a0a2e;
+	--sl-color-accent: #a855f7;
+	--sl-color-accent-high: #e9d5ff;
+	--sl-color-white: #f1f0f5;
+	--sl-color-gray-1: #c4b5d4;
+	--sl-color-gray-2: #9585a8;
+	--sl-color-gray-3: #6b5f7b;
+	--sl-color-gray-4: #3b3154;
+	--sl-color-gray-5: #221a38;
+	--sl-color-gray-6: #130e20;
+	--sl-color-black: #0a0712;
 	--sl-content-width: 52rem;
 }
 
 /* --- Light theme --- */
 :root[data-theme='light'] {
-	--sl-color-accent-low: #fef2f2;
-	--sl-color-accent: #dc2626;
-	--sl-color-accent-high: #7f1d1d;
-	--sl-color-white: #0f172a;
-	--sl-color-gray-1: #1e293b;
-	--sl-color-gray-2: #475569;
-	--sl-color-gray-3: #64748b;
-	--sl-color-gray-4: #cbd5e1;
-	--sl-color-gray-5: #e2e8f0;
-	--sl-color-gray-6: #f8fafc;
+	--sl-color-accent-low: #faf5ff;
+	--sl-color-accent: #9333ea;
+	--sl-color-accent-high: #581c87;
+	--sl-color-white: #1c1033;
+	--sl-color-gray-1: #2e1a47;
+	--sl-color-gray-2: #4c3d64;
+	--sl-color-gray-3: #6b5f7b;
+	--sl-color-gray-4: #c4b5d4;
+	--sl-color-gray-5: #e8e0f0;
+	--sl-color-gray-6: #f5f0fa;
 	--sl-color-black: #ffffff;
 }
 
@@ -46,7 +42,7 @@ html {
 }
 
 ::selection {
-	background: rgba(239, 68, 68, 0.25);
+	background: rgba(168, 85, 247, 0.3);
 }
 
 body {
@@ -55,7 +51,7 @@ body {
 }
 
 /* ============================================================
-   HEADER — clean and minimal
+   HEADER
    ============================================================ */
 
 header.header {
@@ -75,7 +71,7 @@ header.header {
 }
 
 /* ============================================================
-   SIDEBAR — LeakCanary-style clean hierarchy
+   SIDEBAR
    ============================================================ */
 
 nav.sidebar {
@@ -121,7 +117,7 @@ nav.sidebar a[aria-current='true'] {
 }
 
 /* ============================================================
-   HERO — centered, spacious, single focus
+   HERO
    ============================================================ */
 
 .hero {
@@ -156,14 +152,13 @@ nav.sidebar a[aria-current='true'] {
 }
 
 .hero .action.primary {
-	background: var(--sl-color-accent);
-	border-color: var(--sl-color-accent);
+	background: linear-gradient(135deg, #a855f7, #7c3aed);
+	border-color: #a855f7;
 	color: #fff;
 }
 
 .hero .action.primary:hover {
-	background: #dc2626;
-	box-shadow: 0 4px 24px rgba(239, 68, 68, 0.35);
+	box-shadow: 0 4px 28px rgba(168, 85, 247, 0.45);
 	transform: translateY(-1px);
 }
 
@@ -178,7 +173,7 @@ nav.sidebar a[aria-current='true'] {
 }
 
 /* ============================================================
-   CONTENT — generous whitespace, readable
+   CONTENT
    ============================================================ */
 
 .sl-markdown-content {
@@ -230,7 +225,7 @@ nav.sidebar a[aria-current='true'] {
 }
 
 /* ============================================================
-   BLOCKQUOTES — accent-branded callouts
+   BLOCKQUOTES
    ============================================================ */
 
 .sl-markdown-content blockquote {
@@ -251,7 +246,7 @@ nav.sidebar a[aria-current='true'] {
 }
 
 /* ============================================================
-   TABLES — clean with subtle hover
+   TABLES
    ============================================================ */
 
 .sl-markdown-content table {
@@ -279,7 +274,7 @@ nav.sidebar a[aria-current='true'] {
 }
 
 /* ============================================================
-   CARDS — clean with subtle interaction
+   CARDS
    ============================================================ */
 
 .sl-markdown-content .card {
@@ -291,7 +286,7 @@ nav.sidebar a[aria-current='true'] {
 
 .sl-markdown-content .card:hover {
 	border-color: var(--sl-color-accent);
-	box-shadow: 0 2px 20px rgba(239, 68, 68, 0.08);
+	box-shadow: 0 2px 24px rgba(168, 85, 247, 0.1);
 }
 
 .sl-markdown-content .card .card-title {
@@ -308,22 +303,22 @@ nav.sidebar a[aria-current='true'] {
 
 .sl-link-card:hover {
 	border-color: var(--sl-color-accent);
-	box-shadow: 0 4px 16px rgba(239, 68, 68, 0.1);
+	box-shadow: 0 4px 20px rgba(168, 85, 247, 0.12);
 	transform: translateY(-2px);
 }
 
 /* ============================================================
-   STEPS — clean numbered list
+   STEPS
    ============================================================ */
 
 .sl-steps > li::before {
-	background: var(--sl-color-accent) !important;
+	background: linear-gradient(135deg, #a855f7, #7c3aed) !important;
 	color: #fff !important;
 	font-weight: 700;
 }
 
 /* ============================================================
-   ASIDE / ADMONITIONS — clean styling
+   ASIDES / ADMONITIONS
    ============================================================ */
 
 .starlight-aside {
@@ -332,11 +327,11 @@ nav.sidebar a[aria-current='true'] {
 }
 
 .starlight-aside--caution {
-	border-color: var(--sl-color-accent);
+	border-color: #f59e0b;
 }
 
 /* ============================================================
-   TOC (table of contents) — subtle
+   TOC
    ============================================================ */
 
 starlight-toc a {
@@ -350,7 +345,7 @@ starlight-toc a[aria-current='true'] {
 }
 
 /* ============================================================
-   PAGINATION — prev/next links
+   PAGINATION
    ============================================================ */
 
 .pagination-links a {
@@ -364,7 +359,7 @@ starlight-toc a[aria-current='true'] {
 }
 
 /* ============================================================
-   FOOTER — minimal
+   FOOTER
    ============================================================ */
 
 .page-footer {

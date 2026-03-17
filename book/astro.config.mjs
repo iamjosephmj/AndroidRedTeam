@@ -25,7 +25,7 @@ export default defineConfig({
 				},
 				{
 					tag: 'meta',
-					attrs: { name: 'theme-color', content: '#dc2626' },
+					attrs: { name: 'theme-color', content: '#7c3aed' },
 				},
 			],
 			sidebar: [

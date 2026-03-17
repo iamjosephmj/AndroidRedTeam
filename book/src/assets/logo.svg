@@ -1,11 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
   <defs>
     <linearGradient id="g" x1="20" y1="2" x2="20" y2="38" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#ef4444"/>
-      <stop offset="1" stop-color="#b91c1c"/>
+      <stop stop-color="#c084fc"/>
+      <stop offset="1" stop-color="#7c3aed"/>
     </linearGradient>
   </defs>
-  <path d="M20 2L4 12v12c0 10.5 6.8 20.3 16 24 9.2-3.7 16-13.5 16-24V12L20 2z" fill="url(#g)"/>
-  <path d="M17 16h6v10h-6z" fill="#fff" rx="1"/>
-  <circle cx="20" cy="12.5" r="2.5" fill="#fff"/>
+  <!-- body -->
+  <ellipse cx="20" cy="24" rx="11" ry="10" fill="url(#g)"/>
+  <!-- head -->
+  <ellipse cx="20" cy="14" rx="8" ry="6.5" fill="url(#g)"/>
+  <!-- eyes -->
+  <circle cx="16" cy="13.5" r="1.5" fill="#fff"/>
+  <circle cx="24" cy="13.5" r="1.5" fill="#fff"/>
+  <!-- antennae -->
+  <line x1="14" y1="8" x2="11" y2="3" stroke="#c084fc" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="26" y1="8" x2="29" y2="3" stroke="#c084fc" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- legs -->
+  <line x1="12" y1="20" x2="6" y2="18" stroke="#c084fc" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="12" y1="26" x2="6" y2="28" stroke="#c084fc" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="28" y1="20" x2="34" y2="18" stroke="#c084fc" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="28" y1="26" x2="34" y2="28" stroke="#c084fc" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- middle legs -->
+  <line x1="11" y1="23" x2="5" y2="23" stroke="#c084fc" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="29" y1="23" x2="35" y2="23" stroke="#c084fc" stroke-width="1.8" stroke-linecap="round"/>
 </svg>
