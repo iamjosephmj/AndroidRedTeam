@@ -1,35 +1,44 @@
 /* ============================================================
-   Android Red Team — Purple Cyberpunk Theme
+   Android Red Team — Dracula Theme
+   https://draculatheme.com/contribute
    ============================================================ */
 
-/* --- Dark theme (default) --- */
+/* --- Dark theme (default) — Dracula palette --- */
 :root {
-	--sl-color-accent-low: #1a0a2e;
-	--sl-color-accent: #a855f7;
-	--sl-color-accent-high: #e9d5ff;
-	--sl-color-white: #f1f0f5;
-	--sl-color-gray-1: #c4b5d4;
-	--sl-color-gray-2: #9585a8;
-	--sl-color-gray-3: #6b5f7b;
-	--sl-color-gray-4: #3b3154;
-	--sl-color-gray-5: #221a38;
-	--sl-color-gray-6: #130e20;
-	--sl-color-black: #0a0712;
+	--sl-color-accent-low: #2d2240;
+	--sl-color-accent: #bd93f9;
+	--sl-color-accent-high: #e2d4f5;
+	--sl-color-white: #f8f8f2;
+	--sl-color-gray-1: #f8f8f2;
+	--sl-color-gray-2: #bfbfb8;
+	--sl-color-gray-3: #6272a4;
+	--sl-color-gray-4: #44475a;
+	--sl-color-gray-5: #343746;
+	--sl-color-gray-6: #282a36;
+	--sl-color-black: #21222c;
 	--sl-content-width: 52rem;
+
+	--dracula-pink: #ff79c6;
+	--dracula-cyan: #8be9fd;
+	--dracula-green: #50fa7b;
+	--dracula-orange: #ffb86c;
+	--dracula-red: #ff5555;
+	--dracula-yellow: #f1fa8c;
+	--dracula-purple: #bd93f9;
 }
 
-/* --- Light theme --- */
+/* --- Light theme — Dracula-inspired light --- */
 :root[data-theme='light'] {
-	--sl-color-accent-low: #faf5ff;
-	--sl-color-accent: #9333ea;
-	--sl-color-accent-high: #581c87;
-	--sl-color-white: #1c1033;
-	--sl-color-gray-1: #2e1a47;
-	--sl-color-gray-2: #4c3d64;
-	--sl-color-gray-3: #6b5f7b;
-	--sl-color-gray-4: #c4b5d4;
-	--sl-color-gray-5: #e8e0f0;
-	--sl-color-gray-6: #f5f0fa;
+	--sl-color-accent-low: #f3eeff;
+	--sl-color-accent: #7c3aed;
+	--sl-color-accent-high: #4c1d95;
+	--sl-color-white: #282a36;
+	--sl-color-gray-1: #282a36;
+	--sl-color-gray-2: #44475a;
+	--sl-color-gray-3: #6272a4;
+	--sl-color-gray-4: #bfbfb8;
+	--sl-color-gray-5: #e8e6f0;
+	--sl-color-gray-6: #f8f8f2;
 	--sl-color-black: #ffffff;
 }
 
@@ -42,7 +51,8 @@ html {
 }
 
 ::selection {
-	background: rgba(168, 85, 247, 0.3);
+	background: rgba(189, 147, 249, 0.35);
+	color: var(--sl-color-white);
 }
 
 body {
@@ -94,18 +104,19 @@ nav.sidebar .top-level > li > a {
 	text-transform: uppercase;
 	font-size: 0.7rem;
 	letter-spacing: 0.08em;
-	color: var(--sl-color-gray-2);
+	color: var(--sl-color-gray-3);
 	padding-block: 0.25rem;
 }
 
 nav.sidebar a {
+	color: var(--sl-color-gray-2);
 	padding-block: 0.3rem;
 	border-radius: 0.25rem;
 	transition: color 0.15s ease;
 }
 
 nav.sidebar a:hover {
-	color: var(--sl-color-accent);
+	color: var(--dracula-pink);
 }
 
 nav.sidebar a[aria-current='page'],
@@ -133,6 +144,7 @@ nav.sidebar a[aria-current='true'] {
 	letter-spacing: -0.03em;
 	line-height: 1.15;
 	margin-bottom: 1rem;
+	color: var(--sl-color-white);
 }
 
 .hero .tagline {
@@ -152,13 +164,15 @@ nav.sidebar a[aria-current='true'] {
 }
 
 .hero .action.primary {
-	background: linear-gradient(135deg, #a855f7, #7c3aed);
-	border-color: #a855f7;
-	color: #fff;
+	background: var(--dracula-purple);
+	border-color: var(--dracula-purple);
+	color: #282a36;
 }
 
 .hero .action.primary:hover {
-	box-shadow: 0 4px 28px rgba(168, 85, 247, 0.45);
+	background: var(--dracula-pink);
+	border-color: var(--dracula-pink);
+	box-shadow: 0 4px 24px rgba(255, 121, 198, 0.35);
 	transform: translateY(-1px);
 }
 
@@ -168,8 +182,8 @@ nav.sidebar a[aria-current='true'] {
 }
 
 .hero .action.minimal:hover {
-	border-color: var(--sl-color-accent);
-	color: var(--sl-color-accent-high);
+	border-color: var(--dracula-cyan);
+	color: var(--dracula-cyan);
 }
 
 /* ============================================================
@@ -178,6 +192,7 @@ nav.sidebar a[aria-current='true'] {
 
 .sl-markdown-content {
 	line-height: 1.75;
+	color: var(--sl-color-white);
 }
 
 .sl-markdown-content h1 {
@@ -185,6 +200,7 @@ nav.sidebar a[aria-current='true'] {
 	font-weight: 800;
 	letter-spacing: -0.02em;
 	margin-bottom: 1.5rem;
+	color: var(--sl-color-white);
 }
 
 .sl-markdown-content h2 {
@@ -192,22 +208,39 @@ nav.sidebar a[aria-current='true'] {
 	font-weight: 700;
 	margin-top: 3rem;
 	padding-bottom: 0.6rem;
-	border-bottom: 1px solid var(--sl-color-gray-5);
+	border-bottom: 1px solid var(--sl-color-gray-4);
+	color: var(--sl-color-white);
 }
 
 .sl-markdown-content h3 {
 	font-size: var(--sl-text-lg);
 	font-weight: 600;
 	margin-top: 2rem;
+	color: var(--sl-color-white);
 }
 
 .sl-markdown-content p {
 	margin-bottom: 1.25rem;
 }
 
+.sl-markdown-content a {
+	color: var(--dracula-cyan);
+	text-decoration-color: rgba(139, 233, 253, 0.3);
+	transition: text-decoration-color 0.15s ease;
+}
+
+.sl-markdown-content a:hover {
+	text-decoration-color: var(--dracula-cyan);
+}
+
+.sl-markdown-content strong {
+	color: var(--dracula-orange);
+	font-weight: 600;
+}
+
 .sl-markdown-content > hr {
 	border: none;
-	border-top: 1px solid var(--sl-color-gray-5);
+	border-top: 1px solid var(--sl-color-gray-4);
 	margin: 3rem 0;
 }
 
@@ -216,12 +249,13 @@ nav.sidebar a[aria-current='true'] {
    ============================================================ */
 
 .sl-markdown-content :not(pre) > code {
-	background: var(--sl-color-gray-6);
-	border: 1px solid var(--sl-color-gray-5);
+	background: var(--sl-color-gray-5);
+	border: 1px solid var(--sl-color-gray-4);
 	border-radius: 4px;
 	padding: 0.15em 0.4em;
 	font-size: 0.85em;
 	font-weight: 500;
+	color: var(--dracula-green);
 }
 
 /* ============================================================
@@ -229,7 +263,7 @@ nav.sidebar a[aria-current='true'] {
    ============================================================ */
 
 .sl-markdown-content blockquote {
-	border-inline-start: 3px solid var(--sl-color-accent);
+	border-inline-start: 3px solid var(--dracula-purple);
 	background: var(--sl-color-accent-low);
 	padding: 1rem 1.5rem;
 	border-radius: 0 0.5rem 0.5rem 0;
@@ -257,16 +291,17 @@ nav.sidebar a[aria-current='true'] {
 }
 
 .sl-markdown-content th {
-	background: var(--sl-color-gray-6);
+	background: var(--sl-color-gray-5);
 	font-weight: 600;
 	text-align: left;
 	white-space: nowrap;
+	color: var(--dracula-purple);
 }
 
 .sl-markdown-content th,
 .sl-markdown-content td {
 	padding: 0.65rem 1rem;
-	border: 1px solid var(--sl-color-gray-5);
+	border: 1px solid var(--sl-color-gray-4);
 }
 
 .sl-markdown-content tbody tr:hover td {
@@ -278,32 +313,32 @@ nav.sidebar a[aria-current='true'] {
    ============================================================ */
 
 .sl-markdown-content .card {
-	border: 1px solid var(--sl-color-gray-5);
+	border: 1px solid var(--sl-color-gray-4);
 	border-radius: 0.75rem;
 	padding: 1.5rem;
 	transition: border-color 0.2s ease, box-shadow 0.25s ease;
 }
 
 .sl-markdown-content .card:hover {
-	border-color: var(--sl-color-accent);
-	box-shadow: 0 2px 24px rgba(168, 85, 247, 0.1);
+	border-color: var(--dracula-purple);
+	box-shadow: 0 2px 24px rgba(189, 147, 249, 0.1);
 }
 
 .sl-markdown-content .card .card-title {
 	font-size: var(--sl-text-base);
 	font-weight: 700;
+	color: var(--dracula-pink);
 }
 
-/* Link cards */
 .sl-link-card {
-	border: 1px solid var(--sl-color-gray-5);
+	border: 1px solid var(--sl-color-gray-4);
 	border-radius: 0.75rem;
 	transition: border-color 0.2s ease, box-shadow 0.25s ease, transform 0.15s ease;
 }
 
 .sl-link-card:hover {
-	border-color: var(--sl-color-accent);
-	box-shadow: 0 4px 20px rgba(168, 85, 247, 0.12);
+	border-color: var(--dracula-purple);
+	box-shadow: 0 4px 20px rgba(189, 147, 249, 0.12);
 	transform: translateY(-2px);
 }
 
@@ -312,8 +347,8 @@ nav.sidebar a[aria-current='true'] {
    ============================================================ */
 
 .sl-steps > li::before {
-	background: linear-gradient(135deg, #a855f7, #7c3aed) !important;
-	color: #fff !important;
+	background: var(--dracula-purple) !important;
+	color: #282a36 !important;
 	font-weight: 700;
 }
 
@@ -327,7 +362,7 @@ nav.sidebar a[aria-current='true'] {
 }
 
 .starlight-aside--caution {
-	border-color: #f59e0b;
+	border-color: var(--dracula-orange);
 }
 
 /* ============================================================
@@ -336,11 +371,16 @@ nav.sidebar a[aria-current='true'] {
 
 starlight-toc a {
 	font-size: var(--sl-text-xs);
+	color: var(--sl-color-gray-3);
 	transition: color 0.15s ease;
 }
 
+starlight-toc a:hover {
+	color: var(--sl-color-gray-1);
+}
+
 starlight-toc a[aria-current='true'] {
-	color: var(--sl-color-accent);
+	color: var(--dracula-purple);
 	font-weight: 600;
 }
 
@@ -349,13 +389,25 @@ starlight-toc a[aria-current='true'] {
    ============================================================ */
 
 .pagination-links a {
-	border: 1px solid var(--sl-color-gray-5);
+	border: 1px solid var(--sl-color-gray-4);
 	border-radius: 0.5rem;
 	transition: border-color 0.2s ease;
 }
 
 .pagination-links a:hover {
-	border-color: var(--sl-color-accent);
+	border-color: var(--dracula-purple);
+}
+
+/* ============================================================
+   ORDERED / UNORDERED LISTS
+   ============================================================ */
+
+.sl-markdown-content li {
+	color: var(--sl-color-white);
+}
+
+.sl-markdown-content li::marker {
+	color: var(--sl-color-gray-3);
 }
 
 /* ============================================================
@@ -363,7 +415,7 @@ starlight-toc a[aria-current='true'] {
    ============================================================ */
 
 .page-footer {
-	border-top: 1px solid var(--sl-color-gray-5);
+	border-top: 1px solid var(--sl-color-gray-4);
 	margin-top: 3rem;
 	padding-top: 1.5rem;
 }
