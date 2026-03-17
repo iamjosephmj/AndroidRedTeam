@@ -29,19 +29,19 @@ adb shell pm list packages | grep kyc
 adb shell pm list packages | grep verify
 ```
 
-You will get something like `package:com.megabank.onboarding`. That is your target identifier for the rest of the engagement. Write it down -- you will type it dozens of times.
+You will get something like `package:com.testbank.onboarding`. That is your target identifier for the rest of the engagement. Write it down -- you will type it dozens of times.
 
 Now find where the APK lives on disk:
 
 ```bash
-adb shell pm path com.megabank.onboarding
-# package:/data/app/~~abc123==/com.megabank.onboarding-xyz789==/base.apk
+adb shell pm path com.testbank.onboarding
+# package:/data/app/~~abc123==/com.testbank.onboarding-xyz789==/base.apk
 ```
 
 Pull it:
 
 ```bash
-adb pull /data/app/~~abc123==/com.megabank.onboarding-xyz789==/base.apk target.apk
+adb pull /data/app/~~abc123==/com.testbank.onboarding-xyz789==/base.apk target.apk
 ```
 
 You now have the target APK on your machine.
@@ -60,7 +60,7 @@ split_config.xxhdpi.apk        <- high-density drawables
 If you see multiple paths when you run `pm path`, pull all of them:
 
 ```bash
-adb shell pm path com.megabank.onboarding | while read -r line; do
+adb shell pm path com.testbank.onboarding | while read -r line; do
   path=${line#package:}
   name=$(basename "$path")
   adb pull "$path" "$name"
@@ -117,10 +117,10 @@ The two things you care about for recon are the **manifest** and the **smali dir
 
 ### Understanding the Smali Directory Structure
 
-Each `smali*/` directory corresponds to one DEX file from the APK. Inside, the directory tree mirrors the Java/Kotlin package hierarchy. The class `com.megabank.onboarding.camera.FaceAnalyzer` becomes:
+Each `smali*/` directory corresponds to one DEX file from the APK. Inside, the directory tree mirrors the Java/Kotlin package hierarchy. The class `com.testbank.onboarding.camera.FaceAnalyzer` becomes:
 
 ```text
-smali_classes2/com/megabank/onboarding/camera/FaceAnalyzer.smali
+smali_classes2/com/testbank/onboarding/camera/FaceAnalyzer.smali
 ```
 
 When you grep for patterns, you search across all `smali*/` directories because you do not know which DEX file contains the class you are looking for. The app's own code, its third-party libraries, and the Android Jetpack dependencies are distributed across DEX files by the build system -- there is no guaranteed ordering.
@@ -128,13 +128,13 @@ When you grep for patterns, you search across all `smali*/` directories because 
 Inner classes get a `$` separator in their filename. The anonymous `ImageAnalysis.Analyzer` implementation inside `CameraFragment` might appear as:
 
 ```text
-smali_classes2/com/megabank/onboarding/camera/CameraFragment$1.smali
+smali_classes2/com/testbank/onboarding/camera/CameraFragment$1.smali
 ```
 
 Or with a named lambda:
 
 ```text
-smali_classes2/com/megabank/onboarding/camera/CameraFragment$analyzerCallback$1.smali
+smali_classes2/com/testbank/onboarding/camera/CameraFragment$analyzerCallback$1.smali
 ```
 
 This is why grep is your primary recon tool, not manual browsing. You do not know the class names yet. You are searching for API signatures -- the Android framework interfaces and callbacks that the app must implement to use camera, location, and sensor hardware.
@@ -148,7 +148,7 @@ Open `decoded/AndroidManifest.xml`. This is the blueprint of the application. Th
 ### The Application Class
 
 ```xml
-<application android:name="com.megabank.onboarding.BankApplication" ...>
+<application android:name="com.testbank.onboarding.BankApplication" ...>
 ```
 
 This is the first code that runs when the app starts. The Android runtime instantiates this class and calls its `onCreate()` before any Activity appears on screen, before any UI is drawn, before any camera opens. The patch-tool hooks into `onCreate()` of this class to register its lifecycle listener -- that single injection point is the root of the entire hook tree. Everything else chains from it.
@@ -217,15 +217,15 @@ Activities with `android:exported="true"` and an intent filter can be launched d
 This tells you how to start the app after you install the patched version:
 
 ```bash
-adb shell am start -n com.megabank.onboarding/.ui.LauncherActivity
+adb shell am start -n com.testbank.onboarding/.ui.LauncherActivity
 ```
 
-Note the full component name format: `package/.relative.ActivityName`. If the activity name in the manifest starts with a dot, it is relative to the package. If it is a full path like `com.megabank.onboarding.ui.LauncherActivity`, you can use either the full or relative form.
+Note the full component name format: `package/.relative.ActivityName`. If the activity name in the manifest starts with a dot, it is relative to the package. If it is a full path like `com.testbank.onboarding.ui.LauncherActivity`, you can use either the full or relative form.
 
 You can also use monkey to launch the app without knowing the exact launcher activity:
 
 ```bash
-adb shell monkey -p com.megabank.onboarding -c android.intent.category.LAUNCHER 1
+adb shell monkey -p com.testbank.onboarding -c android.intent.category.LAUNCHER 1
 ```
 
 While you are in the manifest, scan for other exported activities. Some apps expose deep-link activities that jump directly to the verification screen -- skipping the login, the terms acceptance, and everything before the KYC flow. If you find one, note it. Jumping directly to the verification screen during testing saves significant time per iteration.
@@ -296,9 +296,9 @@ This trips up operators who do not understand the layered architecture. CameraX 
 How do you tell the difference? Look at the package paths in the grep results.
 
 - Matches inside `androidx/camera/camera2/` or `androidx/camera/core/` -- these are CameraX internals. The app uses CameraX, and CameraX uses Camera2 under the hood. You do not need Camera2 hooks.
-- Matches inside the app's own package (e.g., `com/megabank/onboarding/camera/`) that reference Camera2 APIs -- the app's developers wrote Camera2 code directly. You need Camera2 hooks.
+- Matches inside the app's own package (e.g., `com/testbank/onboarding/camera/`) that reference Camera2 APIs -- the app's developers wrote Camera2 code directly. You need Camera2 hooks.
 
-A concrete example: you grep for `CameraCaptureSession` and get twenty hits. Nineteen are in `androidx/camera/camera2/internal/`. One is in `com/megabank/onboarding/camera/Camera2Analyzer.smali`. That one hit is what matters. The app uses CameraX for its primary flow but also has a Camera2 code path -- possibly a fallback, possibly an alternative implementation for specific devices.
+A concrete example: you grep for `CameraCaptureSession` and get twenty hits. Nineteen are in `androidx/camera/camera2/internal/`. One is in `com/testbank/onboarding/camera/Camera2Analyzer.smali`. That one hit is what matters. The app uses CameraX for its primary flow but also has a Camera2 code path -- possibly a fallback, possibly an alternative implementation for specific devices.
 
 In practice, most KYC apps use one or the other, not both. But when you find both, your recon report should note which classes implement each API so you know which hooks to expect in the patch-tool output.
 
@@ -610,13 +610,13 @@ Now you have two views of the same code:
 Here is how you use them together. Suppose your grep found this:
 
 ```text
-decoded/smali_classes2/com/megabank/onboarding/location/LocationVerifier.smali
+decoded/smali_classes2/com/testbank/onboarding/location/LocationVerifier.smali
 ```
 
 You know `onLocationResult` lives in that class. Now open the jadx version:
 
 ```text
-jadx-output/sources/com/megabank/onboarding/location/LocationVerifier.java
+jadx-output/sources/com/testbank/onboarding/location/LocationVerifier.java
 ```
 
 In jadx output, the same class might look like:
@@ -687,13 +687,13 @@ When jadx output is unclear, fall back to the smali. Smali is always accurate --
 You have done the work. Now document it. A recon report serves two purposes: it tells you what to prepare for the execution phase, and it becomes part of your engagement deliverable.
 
 ```markdown
-# Recon Report: MegaBank Onboarding v3.2.1
+# Recon Report: TestBank Onboarding v3.2.1
 
 ## Target
-- Package: com.megabank.onboarding
+- Package: com.testbank.onboarding
 - Version: 3.2.1
-- Application class: com.megabank.onboarding.BankApplication
-- Launcher activity: com.megabank.onboarding.ui.LauncherActivity
+- Application class: com.testbank.onboarding.BankApplication
+- Launcher activity: com.testbank.onboarding.ui.LauncherActivity
 
 ## Permissions
 - [x] CAMERA
@@ -705,9 +705,9 @@ You have done the work. Now document it. A recon report serves two purposes: it 
 ## Camera Attack Surface
 - API: CameraX
 - Hook targets found:
-  - [x] ImageAnalysis.Analyzer -- smali_classes2/com/megabank/onboarding/camera/FaceAnalyzer.smali
+  - [x] ImageAnalysis.Analyzer -- smali_classes2/com/testbank/onboarding/camera/FaceAnalyzer.smali
   - [x] toBitmap() -- smali/androidx/camera/core/ImageProxy.smali
-  - [x] OnImageCapturedCallback -- smali_classes2/com/megabank/onboarding/camera/CaptureCallback.smali
+  - [x] OnImageCapturedCallback -- smali_classes2/com/testbank/onboarding/camera/CaptureCallback.smali
   - [ ] OnImageAvailableListener -- not found (not Camera2)
   - [ ] SurfaceTexture -- only CameraX internals
 
@@ -719,10 +719,10 @@ You have done the work. Now document it. A recon report serves two purposes: it 
 ## Location Attack Surface
 - API: FusedLocationProvider
 - Hook targets found:
-  - [x] onLocationResult() -- smali_classes2/com/megabank/onboarding/location/LocationVerifier.smali
+  - [x] onLocationResult() -- smali_classes2/com/testbank/onboarding/location/LocationVerifier.smali
   - [ ] onLocationChanged() -- not found (does not use legacy API)
   - [ ] getLastKnownLocation() -- not found
-  - [x] Mock detection: isFromMockProvider -- smali_classes2/com/megabank/onboarding/location/LocationVerifier.smali
+  - [x] Mock detection: isFromMockProvider -- smali_classes2/com/testbank/onboarding/location/LocationVerifier.smali
 - Geofence parameters (from jadx): center 40.758, -73.9855, radius 50 km
 
 ## Sensor Attack Surface
@@ -772,7 +772,7 @@ When writing the assessment, address these questions explicitly:
 
 A few terms used throughout this chapter and the rest of the book:
 
-**smali** -- The human-readable form of Android's Dalvik bytecode. When apktool decodes an APK, it converts the compiled `.dex` files into `.smali` text files -- one file per Java/Kotlin class. The directory structure mirrors the package hierarchy (`com/megabank/onboarding/camera/FaceAnalyzer.smali`). You do not need to read smali fluently for recon -- you grep it to find method signatures and class references. But understanding that each file represents a class, and that inner classes use the `$` separator in filenames, helps you navigate large codebases quickly.
+**smali** -- The human-readable form of Android's Dalvik bytecode. When apktool decodes an APK, it converts the compiled `.dex` files into `.smali` text files -- one file per Java/Kotlin class. The directory structure mirrors the package hierarchy (`com/testbank/onboarding/camera/FaceAnalyzer.smali`). You do not need to read smali fluently for recon -- you grep it to find method signatures and class references. But understanding that each file represents a class, and that inner classes use the `$` separator in filenames, helps you navigate large codebases quickly.
 
 **Hook surface** -- A method in the app's code that the patch-tool will intercept and instrument. Think of it as an insertion point -- a seam in the code where you can place yourself between the app and the data it receives. The more surfaces you find during recon, the more comprehensive your control. A single missed surface is a code path where real data leaks through unmodified.
 
