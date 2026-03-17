@@ -9,7 +9,7 @@ description: "Intercept SharedPreferences data by hand-editing smali bytecode"
 >
 > **Chapter reference:** Chapter 13 -- Smali Bytecode Fundamentals.
 >
-> **Target:** `target-sharedprefs.apk` if available in `targets/`. If not present, use `target-kyc-basic.apk` as a fallback -- any app that calls `SharedPreferences.getString()` will work. See `targets/README.md` for build instructions.
+> **Target:** `materials/targets/target-sharedprefs.apk` if available. If not present, use `materials/targets/target-kyc-basic.apk` as a fallback -- any app that calls `SharedPreferences.getString()` will work.
 
 Every lab until now used the patch-tool to apply hooks automatically. You never touched smali. The tool found the right methods, inserted the right code, and rebuilt the APK. That changes here.
 
@@ -46,7 +46,7 @@ cd /Users/josejames/Documents/android-red-team
 apktool d materials/targets/target-sharedprefs.apk -o decoded-prefs/
 ```
 
-If the target APK is not available, decode `target-kyc-basic.apk` instead:
+If the target APK is not available, decode `materials/targets/target-kyc-basic.apk` instead:
 
 ```bash
 apktool d materials/targets/target-kyc-basic.apk -o decoded-prefs/

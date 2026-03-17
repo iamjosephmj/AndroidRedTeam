@@ -9,7 +9,7 @@ description: "Process three targets through a single automated pipeline"
 >
 > **Chapter reference:** Chapter 12 -- Scaling Operations.
 >
-> **Target:** `target-batch-1.apk`, `target-batch-2.apk`, `target-batch-3.apk` if available in `targets/`. If not present, use copies of `target-kyc-basic.apk` renamed as `target-batch-1.apk`, `target-batch-2.apk`, `target-batch-3.apk` to practice the pipeline workflow. See `targets/README.md`.
+> **Target:** `materials/targets/target-batch-1.apk`, `target-batch-2.apk`, `target-batch-3.apk` if available. If not present, use copies of `materials/targets/target-kyc-basic.apk` renamed as `target-batch-1.apk`, `target-batch-2.apk`, `target-batch-3.apk` to practice the pipeline workflow.
 
 You have been given three target APKs as part of a security assessment. Each uses a different combination of attack surfaces. Your client wants results for all three by end of day. You could run three manual engagements -- that is 45-60 minutes of mechanical work plus reporting. Or you could build a pipeline that does it in a single run.
 

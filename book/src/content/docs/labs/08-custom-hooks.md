@@ -9,7 +9,7 @@ description: "Package a WebView URL interceptor as a reusable patch-tool module"
 >
 > **Chapter reference:** Chapter 14 -- Custom Hook Development.
 >
-> **Target:** `target-webview-app.apk` if available in `targets/`. If not present, use `target-kyc-basic.apk` as a fallback -- any app with `WebView.loadUrl()` calls will work. See `targets/README.md` for build instructions.
+> **Target:** `materials/targets/target-webview-app.apk` if available. If not present, use `materials/targets/target-kyc-basic.apk` as a fallback -- any app with `WebView.loadUrl()` calls will work.
 
 In Lab 7 you edited smali by hand. That works for a single call-site. But when a target has `loadUrl()` calls in six different classes, manual editing becomes tedious and error-prone. This lab teaches you to build a reusable hook module that the patch-tool applies automatically to every matching call-site across the entire APK.
 
@@ -28,7 +28,7 @@ cd /Users/josejames/Documents/android-red-team
 apktool d materials/targets/target-webview-app.apk -o decoded-webview/
 ```
 
-If the target APK is not available, decode `target-kyc-basic.apk`:
+If the target APK is not available, decode `materials/targets/target-kyc-basic.apk`:
 
 ```bash
 apktool d materials/targets/target-kyc-basic.apk -o decoded-webview/

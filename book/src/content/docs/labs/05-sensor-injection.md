@@ -7,7 +7,7 @@ description: "Defeat motion-correlated liveness by injecting physics-consistent 
 >
 > **Estimated time:** 45 minutes.
 >
-> **Target:** `target-kyc-basic.apk` (package `com.poc.biometric`)
+> **Target:** `materials/targets/target-kyc-basic.apk` (package `com.poc.biometric`)
 
 This is the hardest single-target lab in the course. The difficulty is not in the tooling -- you already know how to patch, push, and monitor. The difficulty is in the physics. You must inject camera frames showing a face tilting left while simultaneously injecting accelerometer and gyroscope data that describe the same tilt. If the visual motion and the sensor motion disagree, the liveness check fails.
 

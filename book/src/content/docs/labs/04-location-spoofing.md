@@ -7,7 +7,7 @@ description: "Spoof GPS coordinates to bypass geofencing with mock detection eva
 >
 > **Estimated time:** 30 minutes.
 >
-> **Target:** `target-kyc-basic.apk` (package `com.poc.biometric`)
+> **Target:** `materials/targets/target-kyc-basic.apk` (package `com.poc.biometric`)
 
 The target application has a LocationActivity that performs a geofence check. The device must appear to be near Times Square, New York City (40.7580, -73.9855) for the location verification step to pass. The app also calls `isFromMockProvider()` to detect GPS spoofing tools. You need to bypass both layers: inject the correct coordinates and defeat mock detection.
 
@@ -100,7 +100,7 @@ In the patch output, verify these entries appear:
 - **`onLocationResult`** -- confirms the FusedLocationProvider callback hook was injected
 - **`isFromMockProvider`** -- confirms the mock detection call site was patched to return `false`
 
-If you see `[!] Not found` for either of these, re-check that you are patching the correct APK. The `target-kyc-basic.apk` should have both surfaces.
+If you see `[!] Not found` for either of these, re-check that you are patching the correct APK. The `materials/targets/target-kyc-basic.apk` should have both surfaces.
 
 ---
 
