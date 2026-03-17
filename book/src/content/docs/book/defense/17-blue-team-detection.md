@@ -865,32 +865,30 @@ RASP SDKs implement their core integrity engine in compiled native code (C/C++),
 - Anti-debugging techniques work at the OS level (ptrace self-attach, timing checks, `/proc/self/status` monitoring)
 
 ```text
-┌─────────────────────────────────────────────┐
-│                  Java / Smali                │
-│                                              │
-│   Activity.onCreate()                        │
-│       |                                      │
-│       +-- RaspBridge.verify()   ─── JNI ───┐ │
-│       |                                    │ │
-│   CameraAnalyzer.analyze()                 │ │
-│       |                                    │ │
-│       +-- RaspBridge.getState() ─── JNI ─┐ │ │
-│                                          │ │ │
-├──────────────────────────────────────────┤ │ │
-│              Native (.so)                │ │ │
-│                                          │ │ │
-│   rasp_verify():  ◄─────────────────────┘ │ │
-│       +-- hash DEX files                   │ │
-│       +-- check signature                  │ │
-│       +-- scan /proc/self/status           │ │
-│       +-- ptrace(PTRACE_TRACEME)           │ │
-│       +-- timing check                     │ │
-│       +-- return integrity_state  ◄────────┘ │
-│                                              │
-│   Even if ALL smali checks are removed,      │
-│   the native layer independently detects     │
-│   tampering and controls integrity_state.    │
-└──────────────────────────────────────────────┘
+Java / Smali layer:
+
+  Activity.onCreate()
+       |
+       +-- RaspBridge.verify()  ----------+
+       |                                  |  JNI calls
+  CameraAnalyzer.analyze()               |
+       |                                  |
+       +-- RaspBridge.getState()  --------+
+                                          |
+                                          v
+Native (.so) layer:                       |
+                                          |
+  rasp_verify():  <-----------------------+
+       +-- hash DEX files
+       +-- check signature
+       +-- scan /proc/self/status
+       +-- ptrace(PTRACE_TRACEME)
+       +-- timing check
+       +-- return integrity_state  --------> used by getState()
+
+  Even if ALL smali checks are removed,
+  the native layer independently detects
+  tampering and controls integrity_state.
 ```
 
 The key insight: the native layer does not just report results — it controls an internal `integrity_state` value that downstream processing depends on. Removing the JNI calls from smali does not fix the problem; it removes the state initialization, which defaults to "tampered."
@@ -970,28 +968,28 @@ Instead, it silently corrupts downstream processing.
 ```text
 Legitimate build:
 
-  Play Integrity ──► MEETS_DEVICE_INTEGRITY
+  Play Integrity --> MEETS_DEVICE_INTEGRITY
        |
-  RASP engine ──► integrity_state = VALID
+  RASP engine --> integrity_state = VALID
        |
   Face processing:
        score = model.predict(frame) * confidence_modifier(VALID)
        score = 0.94 * 1.0 = 0.94
        |
-  Server ──► score >= 0.90 ──► ACCEPT ✓
+  Server --> score >= 0.90 --> ACCEPT
 
 
 Tampered build:
 
-  Play Integrity ──► UNRECOGNIZED_VERSION
+  Play Integrity --> UNRECOGNIZED_VERSION
        |
-  RASP engine ──► integrity_state = TAMPERED
+  RASP engine --> integrity_state = TAMPERED
        |
   Face processing:
        score = model.predict(frame) * confidence_modifier(TAMPERED)
        score = 0.94 * 0.68 = 0.64
        |
-  Server ──► score < 0.90 ──► REJECT ✗
+  Server --> score < 0.90 --> REJECT
 
   No crash. No error log. No stack trace.
   App UI shows "processing..." then "verification failed."
@@ -1024,7 +1022,7 @@ With RASP string encryption:
        +-- Legitimate APK:
        |     certHash = "sha256/ABC123..."
        |     key = correct_key
-       |     decrypt(blob, key) = "https://api.liveness.com/v2/verify" ✓
+       |     decrypt(blob, key) = "https://api.liveness.com/v2/verify"  (correct)
        |
        +-- Repackaged APK:
              certHash = "sha256/XYZ789..."  (different signer)
