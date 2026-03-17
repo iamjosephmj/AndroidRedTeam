@@ -9,7 +9,7 @@ description: "Decode a target APK, map every hookable surface, and produce an in
 
 In this lab you will decode the course target APK, interrogate its manifest, identify which camera API it uses, map its location and sensor surfaces, identify the third-party SDK that processes biometric data, and compile a structured recon report. The report you produce here drives every decision in Labs 2 through 6. If you skip something or get it wrong, you will discover the error later as a mysterious hook failure -- and you will end up back here doing the recon you should have done the first time.
 
-The target is `materials/targets/target-kyc-basic.apk` (package: `com.poc.biometric`). All commands assume you are working from the project root.
+The target is [`materials/targets/target-kyc-basic.apk`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/materials/targets/target-kyc-basic.apk) (package: `com.poc.biometric`). All commands assume you are working from the project root.
 
 ---
 

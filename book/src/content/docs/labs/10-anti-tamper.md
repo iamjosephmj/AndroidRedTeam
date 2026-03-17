@@ -9,7 +9,7 @@ description: "Find and neutralize four layers of defense in a hardened target"
 >
 > **Chapter reference:** Chapter 15 -- Anti-Tamper Evasion.
 >
-> **Target:** `materials/targets/target-hardened-kyc.apk` if available. This lab requires a target with anti-tamper defenses -- `materials/targets/target-kyc-basic.apk` does **not** have these defenses and cannot substitute here.
+> **Target:** `materials/targets/target-hardened-kyc.apk` if available. This lab requires a target with anti-tamper defenses -- [`materials/targets/target-kyc-basic.apk`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/materials/targets/target-kyc-basic.apk) does **not** have these defenses and cannot substitute here.
 
 Every target in the previous labs was defenseless. No integrity checks, no signature verification, no awareness of tampering. You patched them, installed them, and injection worked immediately. That was training. This is the real thing.
 

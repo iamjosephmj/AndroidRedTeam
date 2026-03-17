@@ -129,7 +129,7 @@ The output is a fully installable APK with a different signature than the origin
 
 ### The basic command
 
-From the project root (where `patch-tool.jar` lives):
+From the project root (where [`patch-tool.jar`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/patch-tool.jar) lives):
 
 ```bash
 java -jar patch-tool.jar materials/targets/target-kyc-basic.apk

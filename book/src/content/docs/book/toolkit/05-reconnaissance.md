@@ -82,7 +82,7 @@ Download the full APK when possible, not an XAPK or bundle. If only bundles are 
 
 One thing to be aware of: mirror sites may be a version behind. If you are targeting a specific app version -- because the client reported a vulnerability in version 3.2.1, not 3.3.0 -- pulling from a device with that version installed is the most reliable approach. Mirror sites also do not always carry every regional variant, and some KYC apps ship different APKs per region.
 
-For the exercises in this book, you will work with the provided target APK (`materials/targets/target-kyc-basic.apk`), so acquisition is simply a file copy. But on real engagements, the acquisition step matters. Getting the wrong version or a partial bundle wastes time that you will not get back.
+For the exercises in this book, you will work with the provided target APK ([`materials/targets/target-kyc-basic.apk`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/materials/targets/target-kyc-basic.apk)), so acquisition is simply a file copy. But on real engagements, the acquisition step matters. Getting the wrong version or a partial bundle wastes time that you will not get back.
 
 ---
 
@@ -566,7 +566,7 @@ echo ""
 echo "=========================================="
 ```
 
-A ready-to-use version of this script is included in the materials kit at `materials/scripts/recon.sh`. You can also save the above as `recon.sh` in your project root and make it executable (`chmod +x recon.sh`). Run it against any decoded APK directory:
+A ready-to-use version of this script is included in the materials kit at [`materials/scripts/recon.sh`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/materials/scripts/recon.sh). You can also save the above as `recon.sh` in your project root and make it executable (`chmod +x recon.sh`). Run it against any decoded APK directory:
 
 ```bash
 apktool d target.apk -o decoded/
@@ -777,6 +777,6 @@ You now have a complete picture of the target: which camera API it uses, which l
 
 Chapter 6 takes this intelligence and puts it into action. You will run the patch-tool against the target APK -- one command that decodes, injects 1,134 runtime classes, patches every hook surface your recon identified, rebuilds the APK, and signs it. The patch-tool's output is a flight recorder: it tells you exactly which hooks it applied, which it skipped, and why. You will cross-reference that output against your recon report, and everything should match. If it does not, you know exactly where to investigate.
 
-Lab 1 is the companion exercise for this chapter. It walks you through complete recon against the course target APK (`materials/targets/target-kyc-basic.apk`), from decoding through report generation. Do the lab before moving to Chapter 6 -- the recon report you produce becomes the input for the next chapter's patching exercise, and having done the analysis yourself means you will understand exactly what the patch-tool's output is telling you.
+Lab 1 is the companion exercise for this chapter. It walks you through complete recon against the course target APK ([`materials/targets/target-kyc-basic.apk`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/materials/targets/target-kyc-basic.apk)), from decoding through report generation. Do the lab before moving to Chapter 6 -- the recon report you produce becomes the input for the next chapter's patching exercise, and having done the analysis yourself means you will understand exactly what the patch-tool's output is telling you.
 
 Every minute you spend on recon saves ten minutes during execution. The operators who consistently pass multi-step targets on the first attempt are not luckier. They are better at recon.

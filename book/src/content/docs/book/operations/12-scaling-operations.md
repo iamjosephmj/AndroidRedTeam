@@ -267,7 +267,7 @@ The scripts in this section automate the three phases of a multi-target engageme
 
 ### Patch All Targets
 
-Place all target APKs in a directory and patch them in a single pass. The materials kit includes starter scripts at `materials/scripts/batch-patch.sh` and `materials/scripts/batch-deploy.sh` — adapt them for your engagements or use the expanded versions below:
+Place all target APKs in a directory and patch them in a single pass. The materials kit includes starter scripts at [`materials/scripts/batch-patch.sh`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/materials/scripts/batch-patch.sh) and [`materials/scripts/batch-deploy.sh`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/materials/scripts/batch-deploy.sh) — adapt them for your engagements or use the expanded versions below:
 
 ```bash
 #!/bin/bash

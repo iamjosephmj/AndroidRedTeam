@@ -220,7 +220,7 @@ echo "Sensor listeners:   $(grep -c 'SENSOR_LISTENER_HIT' delivery_log.txt)"
 
 ### The delivery-stats.sh Script
 
-The materials include a `delivery-stats.sh` script that automates logcat parsing and calculates accept rates:
+The materials include a [`materials/scripts/delivery-stats.sh`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/materials/scripts/delivery-stats.sh) script that automates logcat parsing and calculates accept rates:
 
 ```bash
 materials/scripts/delivery-stats.sh delivery_log.txt

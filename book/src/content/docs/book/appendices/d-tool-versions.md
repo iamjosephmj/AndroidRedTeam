@@ -237,4 +237,4 @@ adb devices                                            # Expect: at least one de
 java -jar patch-tool.jar --help                        # Expect: usage output
 ```
 
-Reference script location: `materials/scripts/lab-health-check.sh`
+Reference script location: [`materials/scripts/lab-health-check.sh`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/materials/scripts/lab-health-check.sh)

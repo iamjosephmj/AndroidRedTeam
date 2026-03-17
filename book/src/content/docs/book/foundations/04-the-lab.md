@@ -268,7 +268,7 @@ Camera frame payloads require you to generate your own images. Privacy constrain
 
 ### Quick Test Frames
 
-For pipeline verification (won't pass face detection, but confirms injection is working), use the provided script at `materials/payloads/frames/generate-test-frames.sh`:
+For pipeline verification (won't pass face detection, but confirms injection is working), use the provided script at [`materials/payloads/frames/generate-test-frames.sh`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/materials/payloads/frames/generate-test-frames.sh):
 
 ```bash
 ./materials/payloads/frames/generate-test-frames.sh test_frames 30
@@ -389,7 +389,7 @@ echo "patch-tool: $(java -jar patch-tool.jar --help 2>&1 | head -1)"
 
 All five lines should return meaningful output. No `command not found`, no `Error`, no blank lines. If they do, go back and fix the corresponding section.
 
-The materials kit includes `materials/scripts/lab-health-check.sh` — an expanded version of this check with PASS/FAIL output for each component.
+The materials kit includes [`materials/scripts/lab-health-check.sh`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/materials/scripts/lab-health-check.sh) — an expanded version of this check with PASS/FAIL output for each component.
 
 ---
 

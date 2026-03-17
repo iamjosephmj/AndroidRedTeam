@@ -208,7 +208,7 @@ The materials kit includes ready-to-use configs for well-known locations:
 
 ## Walking Routes and Continuous Monitoring
 
-The materials kit includes a ready-made walking route config at `materials/payloads/locations/walking-route.json`. Use it as-is or as a starting point for your own routes.
+The materials kit includes a ready-made walking route config at [`materials/payloads/locations/walking-route.json`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/materials/payloads/locations/walking-route.json). Use it as-is or as a starting point for your own routes.
 
 Some apps don't just check your location once — they monitor it over time. "Stay in the area for 30 seconds" or "walk to the branch entrance." A single static coordinate won't satisfy a continuous monitoring check because the location never changes, and real GPS has natural drift.
 

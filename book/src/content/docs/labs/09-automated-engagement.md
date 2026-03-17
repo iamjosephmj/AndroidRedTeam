@@ -9,7 +9,7 @@ description: "Execute a full engagement pipeline using automation -- shell scrip
 >
 > **Chapter reference:** Chapter 16 -- Automation and Scaling.
 >
-> **Target:** `materials/targets/target-unknown.apk` if available. If not present, use `materials/targets/target-kyc-basic.apk` as the "mystery" target -- pretend you do not know what it contains and let the automation discover it.
+> **Target:** `materials/targets/target-unknown.apk` if available. If not present, use [`materials/targets/target-kyc-basic.apk`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/materials/targets/target-kyc-basic.apk) as the "mystery" target -- pretend you do not know what it contains and let the automation discover it.
 
 You have been handed an APK you have never seen before. You do not know the package name, camera API, location checks, sensor usage, or anti-tamper defenses. It is a black box. Instead of running the manual engagement pipeline -- decode, grep, patch, install, push, launch, verify (15-20 minutes of mechanical work) -- you are going to automate the entire pipeline and run it in a single invocation.
 

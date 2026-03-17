@@ -7,7 +7,7 @@ description: "Execute a complete coordinated engagement against a multi-step KYC
 >
 > **Estimated time:** 60-90 minutes.
 >
-> **Target:** `materials/targets/target-kyc-basic.apk` (package `com.poc.biometric`)
+> **Target:** [`materials/targets/target-kyc-basic.apk`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/materials/targets/target-kyc-basic.apk) (package `com.poc.biometric`)
 
 This is the capstone lab. Everything you have learned converges here.
 
