@@ -4,7 +4,7 @@ description: Bytecode-level biometric bypass for Android KYC and liveness verifi
 template: splash
 hero:
   title: Android Red Team
-  tagline: "Bytecode-level biometric bypass for Android KYC and liveness verification. Camera injection, GPS spoofing, and sensor manipulation — from first principles to full engagements."
+  tagline: "Camera injection, GPS spoofing, and sensor manipulation against Android identity verification — from first principles to full engagements."
   actions:
     - text: Get started
       link: /AndroidRedTeam/book/foundations/01-threat-landscape/
@@ -15,36 +15,30 @@ hero:
       variant: minimal
 ---
 
-import { Card, CardGrid, Steps, Aside, LinkCard } from '@astrojs/starlight/components';
+import { Card, CardGrid, Steps, Aside } from '@astrojs/starlight/components';
 
 <Aside type="caution" title="Authorized Use Only">
-This material is for security professionals conducting **authorized** assessments. Never test applications without explicit permission.
+For security professionals conducting **authorized** assessments only.
 </Aside>
-
----
-
-## What's Inside
 
 <CardGrid stagger>
 	<Card title="The Book" icon="open-book">
-		18 chapters across five parts — from threat landscape through advanced evasion to defensive countermeasures.
+		18 chapters — threat landscape, injection techniques, full engagements, advanced evasion, and defense.
 	</Card>
 	<Card title="The Labs" icon="laptop">
-		14 hands-on exercises with real APKs, concrete deliverables, and self-check scripts.
+		14 hands-on exercises with real APKs, self-check scripts, and concrete deliverables.
 	</Card>
 	<Card title="Materials Kit" icon="seti:folder">
-		Target APKs, payload configs, and automation scripts — everything to run engagements.
+		Target APKs, payload configs (GPS, sensors, frames), and automation scripts.
 	</Card>
 	<Card title="Quick Reference" icon="list-format">
-		Single-page cheatsheet with every command, format, and troubleshooting tip.
+		Every command, payload format, and troubleshooting tip on one page.
 	</Card>
 </CardGrid>
 
 ---
 
-## The Methodology
-
-Every engagement follows the same cycle:
+## The Engagement Cycle
 
 <Steps>
 
@@ -60,21 +54,12 @@ Every engagement follows the same cycle:
 
 </Steps>
 
----
-
-## Start Here
-
-<CardGrid>
-	<LinkCard title="Part I: Foundations" description="Threat landscape, Android internals, and lab setup." href="/AndroidRedTeam/book/foundations/01-threat-landscape/" />
-	<LinkCard title="Part II: The Toolkit" description="Recon, injection pipeline, camera/GPS/sensor bypass." href="/AndroidRedTeam/book/toolkit/05-reconnaissance/" />
-	<LinkCard title="Part III: Operations" description="Full engagements, evidence, reporting, scaling." href="/AndroidRedTeam/book/operations/10-full-engagement/" />
-	<LinkCard title="Part IV: Advanced" description="Smali, custom hooks, anti-tamper, automation." href="/AndroidRedTeam/book/advanced/13-smali-fundamentals/" />
-	<LinkCard title="Part V: Defense" description="Blue team detection and defense-in-depth." href="/AndroidRedTeam/book/defense/17-blue-team-detection/" />
-	<LinkCard title="Quick Reference" description="Every command and payload format in one page." href="/AndroidRedTeam/cheatsheet/" />
-</CardGrid>
+You'll learn each phase independently, then combine them in full engagements against multi-step verification flows.
 
 ---
 
 ## Who Is This For
 
-Penetration testers, security engineers, and developers working on **authorized** assessments of Android identity verification systems. No prior reverse engineering experience required — Part I covers the foundations.
+Penetration testers, security engineers, and developers working on **authorized** assessments of Android identity verification systems.
+
+**No prior reverse engineering experience required** — Part I covers the foundations.

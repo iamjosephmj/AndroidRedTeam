@@ -1,14 +1,11 @@
 /* ============================================================
-   Android Red Team — Dracula Theme (neutral text)
-   Accent colors from Dracula, neutral grays for readability.
+   Android Red Team — Dracula Theme, Reading-Optimized
    ============================================================ */
 
 :root {
 	--sl-color-accent-low: #2a2035;
 	--sl-color-accent: #bd93f9;
 	--sl-color-accent-high: #e2d4f5;
-
-	/* Pure neutral text — no tint */
 	--sl-color-white: #f8f8f2;
 	--sl-color-gray-1: #e0e0e0;
 	--sl-color-gray-2: #a0a0a0;
@@ -17,9 +14,8 @@
 	--sl-color-gray-5: #2c2c2c;
 	--sl-color-gray-6: #1e1e1e;
 	--sl-color-black: #161616;
-
-	--sl-content-width: 52rem;
-
+	--sl-content-width: 48rem;
+	--sl-text-body: 1.05rem;
 	--dracula-pink: #ff79c6;
 	--dracula-cyan: #8be9fd;
 	--dracula-green: #50fa7b;
@@ -31,7 +27,6 @@
 	--sl-color-accent-low: #f3eeff;
 	--sl-color-accent: #7c3aed;
 	--sl-color-accent-high: #4c1d95;
-
 	--sl-color-white: #1a1a1a;
 	--sl-color-gray-1: #2a2a2a;
 	--sl-color-gray-2: #505050;
@@ -84,13 +79,14 @@ header.header {
    ============================================================ */
 
 nav.sidebar {
-	font-size: var(--sl-text-sm);
+	font-size: 0.84rem;
+	padding-top: 0.5rem;
 }
 
 nav.sidebar .top-level > li {
 	border-bottom: 1px solid var(--sl-color-gray-5);
-	padding-bottom: 0.75rem;
-	margin-bottom: 0.75rem;
+	padding-bottom: 0.5rem;
+	margin-bottom: 0.5rem;
 }
 
 nav.sidebar .top-level > li:last-child {
@@ -101,15 +97,15 @@ nav.sidebar .top-level > li > details > summary,
 nav.sidebar .top-level > li > a {
 	font-weight: 700;
 	text-transform: uppercase;
-	font-size: 0.7rem;
+	font-size: 0.68rem;
 	letter-spacing: 0.08em;
 	color: var(--sl-color-gray-3);
-	padding-block: 0.25rem;
+	padding-block: 0.2rem;
 }
 
 nav.sidebar a {
 	color: var(--sl-color-gray-2);
-	padding-block: 0.3rem;
+	padding-block: 0.25rem;
 	border-radius: 0.25rem;
 	transition: color 0.15s ease;
 }
@@ -127,37 +123,37 @@ nav.sidebar a[aria-current='true'] {
 }
 
 /* ============================================================
-   HERO
+   HERO — compact, single-screen
    ============================================================ */
 
 .hero {
-	padding-block: 4rem 3rem;
+	padding-block: 3.5rem 2.5rem;
 	text-align: center;
-	max-width: 48rem;
+	max-width: 44rem;
 	margin-inline: auto;
 }
 
 .hero h1 {
-	font-size: clamp(2rem, 5vw, 3rem);
+	font-size: clamp(1.8rem, 4.5vw, 2.6rem);
 	font-weight: 800;
 	letter-spacing: -0.03em;
 	line-height: 1.15;
-	margin-bottom: 1rem;
+	margin-bottom: 0.75rem;
 }
 
 .hero .tagline {
-	font-size: var(--sl-text-lg);
+	font-size: 1.05rem;
 	color: var(--sl-color-gray-2);
-	max-width: 38ch;
+	max-width: 36ch;
 	margin-inline: auto;
-	line-height: 1.6;
+	line-height: 1.65;
 }
 
 .hero .action {
 	border-radius: 2rem;
-	padding: 0.65rem 1.75rem;
+	padding: 0.6rem 1.6rem;
 	font-weight: 600;
-	font-size: var(--sl-text-sm);
+	font-size: 0.875rem;
 	transition: all 0.2s ease;
 }
 
@@ -185,38 +181,74 @@ nav.sidebar a[aria-current='true'] {
 }
 
 /* ============================================================
-   CONTENT
+   CONTENT — optimized reading rhythm
    ============================================================ */
 
 .sl-markdown-content {
-	line-height: 1.75;
+	font-size: var(--sl-text-body);
+	line-height: 1.8;
 }
 
+/* Headings: clear hierarchy with breathing room */
 .sl-markdown-content h1 {
-	font-size: clamp(1.75rem, 4vw, 2.25rem);
+	font-size: 1.85rem;
 	font-weight: 800;
 	letter-spacing: -0.02em;
-	margin-bottom: 1.5rem;
+	margin-top: 0;
+	margin-bottom: 1.75rem;
+	line-height: 1.25;
 }
 
 .sl-markdown-content h2 {
-	font-size: var(--sl-text-2xl);
+	font-size: 1.4rem;
 	font-weight: 700;
-	margin-top: 3rem;
-	padding-bottom: 0.6rem;
+	margin-top: 3.5rem;
+	margin-bottom: 1rem;
+	padding-bottom: 0.5rem;
 	border-bottom: 1px solid var(--sl-color-gray-5);
+	line-height: 1.3;
 }
 
 .sl-markdown-content h3 {
-	font-size: var(--sl-text-lg);
+	font-size: 1.15rem;
 	font-weight: 600;
-	margin-top: 2rem;
+	margin-top: 2.25rem;
+	margin-bottom: 0.75rem;
+	line-height: 1.35;
 }
 
+.sl-markdown-content h4 {
+	font-size: 1rem;
+	font-weight: 600;
+	margin-top: 1.75rem;
+	margin-bottom: 0.5rem;
+}
+
+/* Paragraphs: comfortable spacing */
 .sl-markdown-content p {
-	margin-bottom: 1.25rem;
+	margin-bottom: 1.35rem;
 }
 
+/* Lists: readable spacing */
+.sl-markdown-content ul,
+.sl-markdown-content ol {
+	margin-bottom: 1.35rem;
+	padding-inline-start: 1.5rem;
+}
+
+.sl-markdown-content li {
+	margin-bottom: 0.4rem;
+}
+
+.sl-markdown-content li p {
+	margin-bottom: 0.5rem;
+}
+
+.sl-markdown-content li::marker {
+	color: var(--sl-color-gray-3);
+}
+
+/* Horizontal rules as section breaks */
 .sl-markdown-content > hr {
 	border: none;
 	border-top: 1px solid var(--sl-color-gray-5);
@@ -231,10 +263,21 @@ nav.sidebar a[aria-current='true'] {
 	background: var(--sl-color-gray-5);
 	border: 1px solid var(--sl-color-gray-4);
 	border-radius: 4px;
-	padding: 0.15em 0.4em;
-	font-size: 0.85em;
+	padding: 0.12em 0.35em;
+	font-size: 0.82em;
 	font-weight: 500;
 	color: var(--dracula-green);
+}
+
+/* ============================================================
+   CODE BLOCKS — comfortable reading
+   ============================================================ */
+
+.sl-markdown-content pre {
+	border-radius: 0.5rem;
+	margin: 1.5rem 0;
+	font-size: 0.85rem;
+	line-height: 1.65;
 }
 
 /* ============================================================
@@ -246,11 +289,12 @@ nav.sidebar a[aria-current='true'] {
 	background: var(--sl-color-gray-6);
 	padding: 1rem 1.5rem;
 	border-radius: 0 0.5rem 0.5rem 0;
-	margin: 2rem 0;
+	margin: 1.75rem 0;
 }
 
 .sl-markdown-content blockquote p {
 	margin-bottom: 0.5rem;
+	font-size: 0.95rem;
 }
 
 .sl-markdown-content blockquote p:last-child {
@@ -258,26 +302,26 @@ nav.sidebar a[aria-current='true'] {
 }
 
 /* ============================================================
-   TABLES
+   TABLES — compact, scannable
    ============================================================ */
 
 .sl-markdown-content table {
 	width: 100%;
 	border-collapse: collapse;
-	font-size: var(--sl-text-sm);
+	font-size: 0.88rem;
 	margin: 1.5rem 0;
+	line-height: 1.5;
 }
 
 .sl-markdown-content th {
 	background: var(--sl-color-gray-5);
 	font-weight: 600;
 	text-align: left;
-	white-space: nowrap;
 }
 
 .sl-markdown-content th,
 .sl-markdown-content td {
-	padding: 0.65rem 1rem;
+	padding: 0.55rem 0.85rem;
 	border: 1px solid var(--sl-color-gray-4);
 }
 
@@ -286,40 +330,40 @@ nav.sidebar a[aria-current='true'] {
 }
 
 /* ============================================================
-   CARDS
+   CARDS — landing page
    ============================================================ */
 
 .sl-markdown-content .card {
 	border: 1px solid var(--sl-color-gray-4);
-	border-radius: 0.75rem;
-	padding: 1.5rem;
+	border-radius: 0.5rem;
+	padding: 1.25rem;
 	transition: border-color 0.2s ease, box-shadow 0.25s ease;
 }
 
 .sl-markdown-content .card:hover {
 	border-color: var(--dracula-purple);
-	box-shadow: 0 2px 20px rgba(189, 147, 249, 0.08);
+	box-shadow: 0 2px 16px rgba(189, 147, 249, 0.08);
 }
 
 .sl-markdown-content .card .card-title {
-	font-size: var(--sl-text-base);
+	font-size: 0.95rem;
 	font-weight: 700;
 }
 
 .sl-link-card {
 	border: 1px solid var(--sl-color-gray-4);
-	border-radius: 0.75rem;
+	border-radius: 0.5rem;
 	transition: border-color 0.2s ease, box-shadow 0.25s ease, transform 0.15s ease;
 }
 
 .sl-link-card:hover {
 	border-color: var(--dracula-purple);
-	box-shadow: 0 4px 20px rgba(189, 147, 249, 0.1);
+	box-shadow: 0 4px 16px rgba(189, 147, 249, 0.1);
 	transform: translateY(-2px);
 }
 
 /* ============================================================
-   STEPS
+   STEPS — landing page methodology
    ============================================================ */
 
 .sl-steps > li::before {
@@ -328,21 +372,26 @@ nav.sidebar a[aria-current='true'] {
 	font-weight: 700;
 }
 
+.sl-steps > li {
+	padding-bottom: 0.5rem;
+}
+
 /* ============================================================
    ASIDES
    ============================================================ */
 
 .starlight-aside {
 	border-radius: 0.5rem;
-	margin: 2rem 0;
+	margin: 1.75rem 0;
+	font-size: 0.92rem;
 }
 
 /* ============================================================
-   TOC
+   TOC — right sidebar
    ============================================================ */
 
 starlight-toc a {
-	font-size: var(--sl-text-xs);
+	font-size: 0.75rem;
 	transition: color 0.15s ease;
 }
 
@@ -352,8 +401,12 @@ starlight-toc a[aria-current='true'] {
 }
 
 /* ============================================================
-   PAGINATION
+   PAGINATION — prev/next
    ============================================================ */
+
+.pagination-links {
+	margin-top: 3rem;
+}
 
 .pagination-links a {
 	border: 1px solid var(--sl-color-gray-5);
@@ -380,15 +433,29 @@ starlight-toc a[aria-current='true'] {
    ============================================================ */
 
 @media (max-width: 50rem) {
+	:root {
+		--sl-text-body: 1rem;
+	}
+
 	.hero {
-		padding-block: 2.5rem 2rem;
+		padding-block: 2rem 1.5rem;
 	}
 
 	.hero h1 {
-		font-size: 1.75rem;
+		font-size: 1.6rem;
+	}
+
+	.sl-markdown-content h1 {
+		font-size: 1.5rem;
 	}
 
 	.sl-markdown-content h2 {
-		margin-top: 2rem;
+		font-size: 1.25rem;
+		margin-top: 2.5rem;
+	}
+
+	.sl-markdown-content h3 {
+		font-size: 1.05rem;
+		margin-top: 1.75rem;
 	}
 }
