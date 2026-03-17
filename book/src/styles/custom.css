@@ -1,63 +1,175 @@
-/* Red Team themed Starlight overrides */
+/* ============================================================
+   Android Red Team — Custom Starlight Theme
+   Inspired by Material for MkDocs: clean, spacious, focused.
+   ============================================================ */
 
-/* --- Accent colors: crimson red for a red-team identity --- */
+/* --- Dark theme (default) --- */
 :root {
-	--sl-color-accent-low: #1a0a0e;
-	--sl-color-accent: #dc2626;
+	--sl-color-accent-low: #1c0a0a;
+	--sl-color-accent: #ef4444;
 	--sl-color-accent-high: #fecaca;
-	--sl-color-white: #f8fafc;
-	--sl-color-gray-1: #e2e8f0;
+	--sl-color-white: #f1f5f9;
+	--sl-color-gray-1: #cbd5e1;
 	--sl-color-gray-2: #94a3b8;
 	--sl-color-gray-3: #64748b;
 	--sl-color-gray-4: #334155;
 	--sl-color-gray-5: #1e293b;
 	--sl-color-gray-6: #0f172a;
 	--sl-color-black: #020617;
+	--sl-font-system:
+		-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+		'Helvetica Neue', Arial, sans-serif;
+	--sl-content-width: 52rem;
 }
 
+/* --- Light theme --- */
 :root[data-theme='light'] {
-	--sl-color-accent-low: #fee2e2;
+	--sl-color-accent-low: #fef2f2;
 	--sl-color-accent: #dc2626;
 	--sl-color-accent-high: #7f1d1d;
-	--sl-color-white: #020617;
+	--sl-color-white: #0f172a;
 	--sl-color-gray-1: #1e293b;
-	--sl-color-gray-2: #334155;
+	--sl-color-gray-2: #475569;
 	--sl-color-gray-3: #64748b;
-	--sl-color-gray-4: #94a3b8;
+	--sl-color-gray-4: #cbd5e1;
 	--sl-color-gray-5: #e2e8f0;
-	--sl-color-gray-6: #f1f5f9;
-	--sl-color-black: #f8fafc;
+	--sl-color-gray-6: #f8fafc;
+	--sl-color-black: #ffffff;
 }
 
-/* --- Hero section --- */
+/* ============================================================
+   GLOBAL
+   ============================================================ */
+
+html {
+	scroll-behavior: smooth;
+}
+
+::selection {
+	background: rgba(239, 68, 68, 0.25);
+}
+
+body {
+	font-feature-settings: 'kern', 'liga';
+	-webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   HEADER — clean and minimal
+   ============================================================ */
+
+header.header {
+	backdrop-filter: blur(12px);
+	border-bottom: 1px solid var(--sl-color-gray-5);
+}
+
+.site-title {
+	font-weight: 700;
+	font-size: var(--sl-text-base) !important;
+	gap: 0.5rem;
+}
+
+.site-title img {
+	height: 1.75rem;
+	width: auto;
+}
+
+/* ============================================================
+   SIDEBAR — LeakCanary-style clean hierarchy
+   ============================================================ */
+
+nav.sidebar {
+	font-size: var(--sl-text-sm);
+}
+
+nav.sidebar .top-level > li {
+	border-bottom: 1px solid var(--sl-color-gray-5);
+	padding-bottom: 0.75rem;
+	margin-bottom: 0.75rem;
+}
+
+nav.sidebar .top-level > li:last-child {
+	border-bottom: none;
+}
+
+nav.sidebar .top-level > li > details > summary,
+nav.sidebar .top-level > li > a {
+	font-weight: 700;
+	text-transform: uppercase;
+	font-size: 0.7rem;
+	letter-spacing: 0.08em;
+	color: var(--sl-color-gray-2);
+	padding-block: 0.25rem;
+}
+
+nav.sidebar a {
+	padding-block: 0.3rem;
+	border-radius: 0.25rem;
+	transition: color 0.15s ease;
+}
+
+nav.sidebar a:hover {
+	color: var(--sl-color-accent);
+}
+
+nav.sidebar a[aria-current='page'],
+nav.sidebar a[aria-current='true'] {
+	color: var(--sl-color-accent);
+	background: var(--sl-color-accent-low);
+	border-inline-start-color: var(--sl-color-accent);
+	font-weight: 600;
+}
+
+/* ============================================================
+   HERO — centered, spacious, single focus
+   ============================================================ */
+
 .hero {
-	padding-block: 3rem;
+	padding-block: 4rem 3rem;
+	text-align: center;
+	max-width: 48rem;
+	margin-inline: auto;
+}
+
+.hero h1 {
+	font-size: clamp(2rem, 5vw, 3rem);
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	line-height: 1.15;
+	margin-bottom: 1rem;
 }
 
 .hero .tagline {
-	font-size: var(--sl-text-xl);
+	font-size: var(--sl-text-lg);
 	color: var(--sl-color-gray-2);
-	max-width: 42ch;
+	max-width: 38ch;
+	margin-inline: auto;
+	line-height: 1.6;
 }
 
-/* Accent glow on primary CTA */
+.hero .action {
+	border-radius: 2rem;
+	padding: 0.65rem 1.75rem;
+	font-weight: 600;
+	font-size: var(--sl-text-sm);
+	transition: all 0.2s ease;
+}
+
 .hero .action.primary {
 	background: var(--sl-color-accent);
 	border-color: var(--sl-color-accent);
 	color: #fff;
-	font-weight: 600;
-	transition: box-shadow 0.2s ease, transform 0.15s ease;
 }
 
 .hero .action.primary:hover {
-	box-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
+	background: #dc2626;
+	box-shadow: 0 4px 24px rgba(239, 68, 68, 0.35);
 	transform: translateY(-1px);
 }
 
 .hero .action.minimal {
 	border-color: var(--sl-color-gray-4);
 	color: var(--sl-color-gray-1);
-	transition: border-color 0.2s ease;
 }
 
 .hero .action.minimal:hover {
@@ -65,142 +177,216 @@
 	color: var(--sl-color-accent-high);
 }
 
-/* --- Card grid on landing page --- */
-.card-grid {
-	gap: 1.5rem;
+/* ============================================================
+   CONTENT — generous whitespace, readable
+   ============================================================ */
+
+.sl-markdown-content {
+	line-height: 1.75;
 }
 
-.sl-markdown-content .card {
-	border: 1px solid var(--sl-color-gray-5);
-	border-radius: 0.75rem;
-	transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.sl-markdown-content .card:hover {
-	border-color: var(--sl-color-accent);
-	box-shadow: 0 0 16px rgba(220, 38, 38, 0.12);
-}
-
-.sl-markdown-content .card .card-title {
-	color: var(--sl-color-white);
-}
-
-/* --- Sidebar polish --- */
-nav.sidebar .top-level > li > details > summary,
-nav.sidebar .top-level > li > a {
-	font-weight: 600;
-	text-transform: uppercase;
-	font-size: var(--sl-text-xs);
-	letter-spacing: 0.05em;
-	color: var(--sl-color-gray-2);
-}
-
-nav.sidebar a[aria-current='page'],
-nav.sidebar a[aria-current='true'] {
-	color: var(--sl-color-accent);
-	border-inline-start-color: var(--sl-color-accent);
-	font-weight: 600;
-}
-
-/* --- Content typography --- */
 .sl-markdown-content h1 {
-	font-size: var(--sl-text-4xl);
+	font-size: clamp(1.75rem, 4vw, 2.25rem);
+	font-weight: 800;
 	letter-spacing: -0.02em;
+	margin-bottom: 1.5rem;
 }
 
 .sl-markdown-content h2 {
+	font-size: var(--sl-text-2xl);
+	font-weight: 700;
+	margin-top: 3rem;
+	padding-bottom: 0.6rem;
 	border-bottom: 1px solid var(--sl-color-gray-5);
-	padding-bottom: 0.5rem;
-	margin-top: 2.5rem;
 }
 
-/* Inline code */
+.sl-markdown-content h3 {
+	font-size: var(--sl-text-lg);
+	font-weight: 600;
+	margin-top: 2rem;
+}
+
+.sl-markdown-content p {
+	margin-bottom: 1.25rem;
+}
+
+.sl-markdown-content > hr {
+	border: none;
+	border-top: 1px solid var(--sl-color-gray-5);
+	margin: 3rem 0;
+}
+
+/* ============================================================
+   INLINE CODE
+   ============================================================ */
+
 .sl-markdown-content :not(pre) > code {
 	background: var(--sl-color-gray-6);
 	border: 1px solid var(--sl-color-gray-5);
-	border-radius: 0.25rem;
-	padding: 0.15em 0.35em;
-	font-size: 0.875em;
+	border-radius: 4px;
+	padding: 0.15em 0.4em;
+	font-size: 0.85em;
+	font-weight: 500;
 }
 
-/* --- Blockquote / ethics notes --- */
+/* ============================================================
+   BLOCKQUOTES — accent-branded callouts
+   ============================================================ */
+
 .sl-markdown-content blockquote {
 	border-inline-start: 3px solid var(--sl-color-accent);
 	background: var(--sl-color-accent-low);
-	padding: 1rem 1.25rem;
+	padding: 1rem 1.5rem;
 	border-radius: 0 0.5rem 0.5rem 0;
-	margin-block: 1.5rem;
+	margin: 2rem 0;
 }
 
 .sl-markdown-content blockquote p {
+	margin-bottom: 0.5rem;
 	color: var(--sl-color-gray-1);
 }
 
-/* --- Tables --- */
+.sl-markdown-content blockquote p:last-child {
+	margin-bottom: 0;
+}
+
+/* ============================================================
+   TABLES — clean with subtle hover
+   ============================================================ */
+
 .sl-markdown-content table {
-	border-collapse: collapse;
 	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--sl-text-sm);
+	margin: 1.5rem 0;
 }
 
 .sl-markdown-content th {
 	background: var(--sl-color-gray-6);
 	font-weight: 600;
 	text-align: left;
+	white-space: nowrap;
 }
 
 .sl-markdown-content th,
 .sl-markdown-content td {
-	padding: 0.6rem 0.8rem;
+	padding: 0.65rem 1rem;
 	border: 1px solid var(--sl-color-gray-5);
 }
 
-.sl-markdown-content tr:hover td {
+.sl-markdown-content tbody tr:hover td {
 	background: var(--sl-color-accent-low);
 }
 
-/* --- Landing page specific --- */
-.sl-markdown-content .methodology-steps {
-	counter-reset: step;
-	list-style: none;
-	padding: 0;
+/* ============================================================
+   CARDS — clean with subtle interaction
+   ============================================================ */
+
+.sl-markdown-content .card {
+	border: 1px solid var(--sl-color-gray-5);
+	border-radius: 0.75rem;
+	padding: 1.5rem;
+	transition: border-color 0.2s ease, box-shadow 0.25s ease;
 }
 
-.sl-markdown-content .methodology-steps li {
-	counter-increment: step;
-	position: relative;
-	padding-left: 3rem;
-	margin-bottom: 1rem;
+.sl-markdown-content .card:hover {
+	border-color: var(--sl-color-accent);
+	box-shadow: 0 2px 20px rgba(239, 68, 68, 0.08);
 }
 
-.sl-markdown-content .methodology-steps li::before {
-	content: counter(step);
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 2rem;
-	height: 2rem;
-	background: var(--sl-color-accent);
-	color: #fff;
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-weight: 700;
-	font-size: 0.85rem;
-}
-
-/* --- Footer --- */
-.site-title {
+.sl-markdown-content .card .card-title {
+	font-size: var(--sl-text-base);
 	font-weight: 700;
 }
 
-/* --- Smooth scroll --- */
-html {
-	scroll-behavior: smooth;
+/* Link cards */
+.sl-link-card {
+	border: 1px solid var(--sl-color-gray-5);
+	border-radius: 0.75rem;
+	transition: border-color 0.2s ease, box-shadow 0.25s ease, transform 0.15s ease;
 }
 
-/* --- Selection color --- */
-::selection {
-	background: rgba(220, 38, 38, 0.3);
-	color: var(--sl-color-white);
+.sl-link-card:hover {
+	border-color: var(--sl-color-accent);
+	box-shadow: 0 4px 16px rgba(239, 68, 68, 0.1);
+	transform: translateY(-2px);
+}
+
+/* ============================================================
+   STEPS — clean numbered list
+   ============================================================ */
+
+.sl-steps > li::before {
+	background: var(--sl-color-accent) !important;
+	color: #fff !important;
+	font-weight: 700;
+}
+
+/* ============================================================
+   ASIDE / ADMONITIONS — clean styling
+   ============================================================ */
+
+.starlight-aside {
+	border-radius: 0.5rem;
+	margin: 2rem 0;
+}
+
+.starlight-aside--caution {
+	border-color: var(--sl-color-accent);
+}
+
+/* ============================================================
+   TOC (table of contents) — subtle
+   ============================================================ */
+
+starlight-toc a {
+	font-size: var(--sl-text-xs);
+	transition: color 0.15s ease;
+}
+
+starlight-toc a[aria-current='true'] {
+	color: var(--sl-color-accent);
+	font-weight: 600;
+}
+
+/* ============================================================
+   PAGINATION — prev/next links
+   ============================================================ */
+
+.pagination-links a {
+	border: 1px solid var(--sl-color-gray-5);
+	border-radius: 0.5rem;
+	transition: border-color 0.2s ease;
+}
+
+.pagination-links a:hover {
+	border-color: var(--sl-color-accent);
+}
+
+/* ============================================================
+   FOOTER — minimal
+   ============================================================ */
+
+.page-footer {
+	border-top: 1px solid var(--sl-color-gray-5);
+	margin-top: 3rem;
+	padding-top: 1.5rem;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 50rem) {
+	.hero {
+		padding-block: 2.5rem 2rem;
+	}
+
+	.hero h1 {
+		font-size: 1.75rem;
+	}
+
+	.sl-markdown-content h2 {
+		margin-top: 2rem;
+	}
 }

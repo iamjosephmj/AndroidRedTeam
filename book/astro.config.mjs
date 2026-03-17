@@ -9,6 +9,10 @@ export default defineConfig({
 		starlight({
 			title: 'Android Red Team',
 			description: 'Bytecode-level biometric bypass for Android KYC and liveness verification',
+			logo: {
+				src: './src/assets/logo.svg',
+				alt: 'Android Red Team',
+			},
 			favicon: '/favicon.svg',
 			customCss: ['./src/styles/custom.css'],
 			social: [
