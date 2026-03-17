@@ -399,7 +399,7 @@ If you use [Cursor](https://cursor.sh/) as your IDE, this repository ships two A
 
 ### `android-red-team.md` -- The Full Toolkit
 
-This skill encodes 38 sections of operational knowledge: the APK repackaging pipeline, reconnaissance methodology, all three hook patterns, camera/location/sensor injection configs, anti-tamper evasion techniques, native JNI defense handling, asset manipulation, Kotlin-specific smali patterns, feature flag exploitation, split APK handling, and more. When loaded, the agent can:
+This skill encodes 41 sections of operational knowledge: the APK repackaging pipeline, reconnaissance methodology, all three hook patterns, camera/location/sensor injection configs, anti-tamper evasion techniques, native JNI defense handling, asset manipulation, Kotlin-specific smali patterns, feature flag exploitation, split APK handling, and more. When loaded, the agent can:
 
 - Generate recon scripts tailored to a specific APK
 - Write smali patches with correct register allocation

@@ -2649,3 +2649,558 @@ Can you find the flag value in a file inside the APK?
                     -> Or patch the call site (Strategy B)
                     -> Or intercept via proxy (Strategy C)
 ```
+
+---
+
+## 39. Full Recon Script (One-Pass Attack Surface Report)
+
+Run this after `apktool d target.apk -o decoded/`. It produces a complete attack surface map in one pass.
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+DECODED="${1:?Usage: $0 <decoded-dir>}"
+[ -d "$DECODED" ] || { echo "ERROR: $DECODED not found"; exit 1; }
+
+MANIFEST="$DECODED/AndroidManifest.xml"
+SMALI="$DECODED/smali*"
+OUT="recon-report-$(date +%Y%m%d-%H%M%S).txt"
+
+divider() { echo -e "\n========== $1 =========="; }
+
+{
+
+divider "1. APP IDENTITY"
+echo "--- Package ---"
+grep 'package=' "$MANIFEST" | head -1
+echo "--- Version ---"
+grep 'versionName\|versionCode' "$DECODED/apktool.yml" 2>/dev/null || echo "(not found in apktool.yml)"
+echo "--- SDK Levels ---"
+grep 'minSdkVersion\|targetSdkVersion' "$DECODED/apktool.yml" 2>/dev/null || echo "(not found)"
+echo "--- Application Class ---"
+grep -oP 'android:name="[^"]*"' "$MANIFEST" | head -1 || echo "(default Application)"
+
+divider "2. PERMISSIONS"
+grep 'uses-permission' "$MANIFEST" | sed 's/.*name="//;s/".*//' | sort
+
+divider "3. EXPORTED COMPONENTS"
+echo "--- Activities ---"
+grep -B2 'exported="true"' "$MANIFEST" | grep 'activity\|android:name' || echo "(none)"
+echo "--- Services ---"
+grep -B2 -A1 '<service' "$MANIFEST" | grep 'exported="true"\|android:name' || echo "(none)"
+echo "--- Receivers ---"
+grep -B2 -A1 '<receiver' "$MANIFEST" | grep 'exported="true"\|android:name' || echo "(none)"
+echo "--- Providers ---"
+grep -B2 -A3 '<provider' "$MANIFEST" | grep 'exported="true"\|android:name\|authorities' || echo "(none)"
+
+divider "4. DEEP LINKS"
+grep -A5 'android:scheme=' "$MANIFEST" 2>/dev/null || echo "(none)"
+
+divider "5. CAMERA API"
+echo "--- CameraX ---"
+grep -rln "ImageAnalysis\|ImageProxy\|CameraX" $SMALI 2>/dev/null | head -10 || echo "(not found)"
+echo "--- Camera2 ---"
+grep -rln "CameraDevice\|CameraCaptureSession\|ImageReader" $SMALI 2>/dev/null | head -10 || echo "(not found)"
+echo "--- Analyzer Implementations ---"
+grep -rn "implements.*ImageAnalysis\$Analyzer" $SMALI 2>/dev/null || echo "(none)"
+
+divider "6. LOCATION API"
+echo "--- FusedLocation ---"
+grep -rln "FusedLocation\|onLocationResult\|getLastLocation" $SMALI 2>/dev/null | head -10 || echo "(not found)"
+echo "--- LocationManager ---"
+grep -rln "onLocationChanged\|getLastKnownLocation" $SMALI 2>/dev/null | head -10 || echo "(not found)"
+echo "--- Mock Detection ---"
+grep -rn "isFromMockProvider\|isMock\|mock_location" $SMALI 2>/dev/null | head -10 || echo "(none)"
+echo "--- Geofence Constants ---"
+grep -rn "geofence\|LatLng\|latitude\|longitude" $SMALI 2>/dev/null | grep -i "const\|string" | head -10 || echo "(none)"
+
+divider "7. SENSOR API"
+grep -rln "onSensorChanged\|SensorEventListener\|TYPE_ACCELEROMETER\|TYPE_GYROSCOPE" $SMALI 2>/dev/null | head -10 || echo "(not found)"
+
+divider "8. BIOMETRIC / LIVENESS"
+echo "--- BiometricPrompt ---"
+grep -rln "BiometricPrompt\|FingerprintManager" $SMALI 2>/dev/null | head -10 || echo "(not found)"
+echo "--- Liveness SDKs ---"
+grep -rln "facetec\|iproov\|jumio\|onfido\|regula\|daon\|aware\|liveness" $SMALI 2>/dev/null | head -10 || echo "(not found)"
+echo "--- Liveness Result Mapping ---"
+grep -rn "LIVE\|SPOOF\|INDET\|LivenessResult\|livenessVerdict" $SMALI 2>/dev/null | head -10 || echo "(none)"
+
+divider "9. ANTI-TAMPER DEFENSES"
+echo "--- Signature Verification ---"
+grep -rln "getPackageInfo\|GET_SIGNATURES\|GET_SIGNING_CERTIFICATES\|MessageDigest" $SMALI 2>/dev/null | sort -u | head -10 || echo "(none)"
+echo "--- DEX Integrity ---"
+grep -rln "classes\.dex\|getCrc\|getChecksum\|ZipEntry" $SMALI 2>/dev/null | sort -u | head -10 || echo "(none)"
+echo "--- Installer Verification ---"
+grep -rln "getInstallingPackageName\|getInstallSourceInfo\|com\.android\.vending" $SMALI 2>/dev/null | sort -u | head -5 || echo "(none)"
+echo "--- Root/Emulator Detection ---"
+grep -rln "su\b\|/system/xbin\|Superuser\|magisk\|goldfish\|sdk_gphone\|ranchu" $SMALI 2>/dev/null | sort -u | head -10 || echo "(none)"
+echo "--- Play Integrity / SafetyNet ---"
+grep -rln "IntegrityToken\|SafetyNet\|safetynet\|PlayIntegrity" $SMALI 2>/dev/null | sort -u | head -5 || echo "(none)"
+echo "--- Certificate Pinning ---"
+grep -rn "CertificatePinner" $SMALI 2>/dev/null | head -5 || echo "(none)"
+grep 'network_security_config' "$MANIFEST" 2>/dev/null || echo "(no network security config)"
+echo "--- Debug Detection ---"
+grep -rln "android:debuggable\|isDebuggerConnected\|Debug\.isDebuggerConnected" $SMALI 2>/dev/null | head -5 || echo "(none)"
+echo "--- Frida/Xposed Detection ---"
+grep -rln "frida\|xposed\|substrate\|cydia" $SMALI 2>/dev/null | head -5 || echo "(none)"
+
+divider "10. NATIVE CODE (JNI)"
+echo "--- Native Method Declarations ---"
+grep -rn "\.method.*native" $SMALI 2>/dev/null | head -10 || echo "(none)"
+echo "--- System.loadLibrary ---"
+grep -rn "loadLibrary\|System\.load" $SMALI 2>/dev/null | head -10 || echo "(none)"
+echo "--- Native Libraries ---"
+ls "$DECODED/lib/"*/ 2>/dev/null || echo "(no native libs)"
+
+divider "11. WEBVIEW"
+echo "--- WebView Usage ---"
+grep -rln "WebView\|WebViewClient\|loadUrl\|loadData" $SMALI 2>/dev/null | head -10 || echo "(not found)"
+echo "--- JavaScript Interfaces ---"
+grep -rn "addJavascriptInterface\|JavascriptInterface" $SMALI 2>/dev/null | head -10 || echo "(none)"
+
+divider "12. ASSETS & CONFIGS"
+echo "--- JSON Configs ---"
+find "$DECODED/assets/" "$DECODED/res/raw/" -name "*.json" 2>/dev/null || echo "(none)"
+echo "--- ML Models ---"
+find "$DECODED/assets/" "$DECODED/res/raw/" -name "*.tflite" -o -name "*.onnx" -o -name "*.pt" -o -name "*.mlmodel" 2>/dev/null || echo "(none)"
+echo "--- Firebase Remote Config ---"
+[ -f "$DECODED/res/xml/remote_config_defaults.xml" ] && echo "FOUND: res/xml/remote_config_defaults.xml" || echo "(none)"
+echo "--- Properties/Config Files ---"
+find "$DECODED/assets/" "$DECODED/res/raw/" -name "*.properties" -o -name "*.cfg" -o -name "*.conf" -o -name "*.yaml" 2>/dev/null || echo "(none)"
+
+divider "13. FEATURE FLAGS"
+echo "--- BuildConfig ---"
+find "$DECODED"/smali*/ -name "BuildConfig.smali" -exec echo "=== {} ===" \; -exec grep "const\|\.field.*static.*final" {} \; 2>/dev/null || echo "(not found)"
+echo "--- SharedPreferences Defaults ---"
+find "$DECODED/res/xml/" -name "*prefer*" -o -name "*settings*" -o -name "*config*" 2>/dev/null || echo "(none)"
+echo "--- Flag-like Strings ---"
+grep -iE "enable|disable|debug|bypass|skip|force|mock|staging|feature_flag" "$DECODED/res/values/strings.xml" 2>/dev/null | head -15 || echo "(none)"
+
+divider "14. ENCRYPTION & SECRETS"
+echo "--- Hardcoded Keys/Tokens ---"
+grep -rn "api_key\|apiKey\|secret\|API_KEY\|SECRET\|Bearer\|token" "$DECODED/res/values/strings.xml" 2>/dev/null | head -10 || echo "(none)"
+echo "--- Cipher Usage ---"
+grep -rln "Cipher\|SecretKey\|AES\|RSA\|EncryptedSharedPreferences" $SMALI 2>/dev/null | sort -u | head -10 || echo "(none)"
+
+divider "15. KOTLIN / FRAMEWORK PROFILE"
+echo "--- Kotlin Runtime ---"
+KOTLIN_COUNT=$(find "$DECODED"/smali*/ -path "*/kotlin/*" -name "*.smali" 2>/dev/null | wc -l | tr -d ' ')
+[ "$KOTLIN_COUNT" -gt 0 ] && echo "PRESENT ($KOTLIN_COUNT files)" || echo "NOT PRESENT -- pure Java app, do NOT reference Lkotlin/ in patches"
+echo "--- AndroidX ---"
+[ -d "$DECODED/smali"/*/androidx ] || [ -d "$DECODED/smali_classes"*/androidx ] 2>/dev/null && echo "PRESENT" || echo "NOT PRESENT"
+echo "--- Support Library ---"
+find "$DECODED"/smali*/ -path "*/android/support/*" -name "*.smali" 2>/dev/null | head -1 | grep -q . && echo "PRESENT" || echo "NOT PRESENT"
+
+divider "16. MULTI-DEX LAYOUT"
+for d in "$DECODED"/smali*/; do
+    COUNT=$(find "$d" -name "*.smali" 2>/dev/null | wc -l | tr -d ' ')
+    echo "$(basename "$d"): $COUNT classes"
+done
+
+divider "17. THIRD-PARTY SDKs"
+for sdk_dir in "$DECODED"/smali*/com/ "$DECODED"/smali*/io/ "$DECODED"/smali*/org/; do
+    [ -d "$sdk_dir" ] && ls -1 "$sdk_dir" 2>/dev/null
+done | sort -u | grep -v "^$" || echo "(none found)"
+
+divider "SUMMARY"
+echo "Recon complete. Key attack surfaces to investigate:"
+echo "  - Review each section above for [FOUND] items"
+echo "  - Prioritize: Camera > Liveness > Anti-Tamper > Location > Sensors > Feature Flags"
+echo "  - Check Kotlin/AndroidX profile BEFORE writing any hook code"
+
+} 2>&1 | tee "$OUT"
+
+echo ""
+echo "=== Report saved to: $OUT ==="
+```
+
+---
+
+## 40. Worked Hook Examples (Before / After / Logcat)
+
+Complete copy-paste examples for each of the three hook patterns. Each shows the original smali, the patched smali, and what you see in logcat to confirm it works.
+
+### Example 1: Method Entry Injection -- Camera Frame Replacement
+
+**Scenario:** App uses CameraX `ImageAnalysis.Analyzer`. We want to replace every incoming frame with our prepared image.
+
+**Step 1: Find the target method**
+```bash
+grep -rn "implements.*ImageAnalysis\$Analyzer" decoded/smali*/
+# Result: decoded/smali_classes2/com/target/camera/FaceAnalyzer.smali
+grep -n "\.method.*analyze" decoded/smali_classes2/com/target/camera/FaceAnalyzer.smali
+# Result: line 47: .method public analyze(Landroidx/camera/core/ImageProxy;)V
+```
+
+**Step 2: Read the original method**
+```smali
+# BEFORE (FaceAnalyzer.smali, starting at line 47)
+.method public analyze(Landroidx/camera/core/ImageProxy;)V
+    .locals 5
+    .param p1, "imageProxy"
+
+    .line 23
+    invoke-interface {p1}, Landroidx/camera/core/ImageProxy;->getWidth()I
+    move-result v0
+
+    invoke-interface {p1}, Landroidx/camera/core/ImageProxy;->getHeight()I
+    move-result v1
+
+    .line 24
+    invoke-static {p1}, Lcom/target/camera/FrameUtils;->toBitmap(Landroidx/camera/core/ImageProxy;)Landroid/graphics/Bitmap;
+    move-result-object v2
+
+    .line 25
+    invoke-virtual {p0, v2}, Lcom/target/camera/FaceAnalyzer;->processFace(Landroid/graphics/Bitmap;)V
+
+    .line 26
+    invoke-interface {p1}, Landroidx/camera/core/ImageProxy;->close()V
+
+    return-void
+.end method
+```
+
+**Step 3: Patch -- inject interceptor at method entry**
+```smali
+# AFTER (FaceAnalyzer.smali)
+.method public analyze(Landroidx/camera/core/ImageProxy;)V
+    .locals 5
+    .param p1, "imageProxy"
+
+    # >>> HOOK: replace ImageProxy before anything reads it
+    invoke-static {p1}, Lcom/hookengine/core/FrameInterceptor;->intercept(Landroidx/camera/core/ImageProxy;)Landroidx/camera/core/ImageProxy;
+    move-result-object p1
+    # <<< END HOOK
+
+    .line 23
+    invoke-interface {p1}, Landroidx/camera/core/ImageProxy;->getWidth()I
+    move-result v0
+
+    invoke-interface {p1}, Landroidx/camera/core/ImageProxy;->getHeight()I
+    move-result v1
+
+    .line 24
+    invoke-static {p1}, Lcom/target/camera/FrameUtils;->toBitmap(Landroidx/camera/core/ImageProxy;)Landroid/graphics/Bitmap;
+    move-result-object v2
+
+    .line 25
+    invoke-virtual {p0, v2}, Lcom/target/camera/FaceAnalyzer;->processFace(Landroid/graphics/Bitmap;)V
+
+    .line 26
+    invoke-interface {p1}, Landroidx/camera/core/ImageProxy;->close()V
+
+    return-void
+.end method
+```
+
+**What changed:** Two lines added after `.param`. No registers changed, no `.locals` bump needed (we reused `p1`).
+
+**Step 4: Verify in logcat**
+```
+$ adb logcat -s FrameInterceptor
+D/FrameInterceptor: intercept() called -- frame #1 loaded from /sdcard/poc_frames/face_neutral/frame_0001.png (640x480)
+D/FrameInterceptor: intercept() called -- frame #2 loaded from /sdcard/poc_frames/face_neutral/frame_0002.png (640x480)
+D/FrameInterceptor: intercept() called -- frame #3 loaded from /sdcard/poc_frames/face_neutral/frame_0003.png (640x480)
+D/FrameInterceptor: FRAME_DELIVERED count=3
+```
+
+**If you don't see this:** Hook not firing. Check that `FrameInterceptor.smali` is in the same `smali_classes*` directory and the `.class` directive matches the path.
+
+---
+
+### Example 2: Call-Site Interception -- Location Spoofing
+
+**Scenario:** App calls `getLastKnownLocation()` inside a method. We intercept the return value.
+
+**Step 1: Find the call site**
+```bash
+grep -rn "getLastKnownLocation" decoded/smali*/
+# Result: decoded/smali/com/target/location/LocationHelper.smali:82
+```
+
+**Step 2: Read the original**
+```smali
+# BEFORE (LocationHelper.smali, around line 78)
+.method public getCurrentLocation()Landroid/location/Location;
+    .locals 4
+
+    .line 30
+    iget-object v0, p0, Lcom/target/location/LocationHelper;->locationManager:Landroid/location/LocationManager;
+    const-string v1, "gps"
+
+    .line 31
+    invoke-virtual {v0, v1}, Landroid/location/LocationManager;->getLastKnownLocation(Ljava/lang/String;)Landroid/location/Location;
+    move-result-object v2
+
+    .line 32
+    if-eqz v2, :no_location
+
+    invoke-virtual {v2}, Landroid/location/Location;->getLatitude()D
+    move-result-wide v3
+    # ... uses v2 (the Location) further down ...
+
+    return-object v2
+
+    :no_location
+    const/4 v2, 0x0
+    return-object v2
+.end method
+```
+
+**Step 3: Patch -- intercept right after getLastKnownLocation returns**
+```smali
+# AFTER (LocationHelper.smali)
+.method public getCurrentLocation()Landroid/location/Location;
+    .locals 4
+
+    .line 30
+    iget-object v0, p0, Lcom/target/location/LocationHelper;->locationManager:Landroid/location/LocationManager;
+    const-string v1, "gps"
+
+    .line 31
+    invoke-virtual {v0, v1}, Landroid/location/LocationManager;->getLastKnownLocation(Ljava/lang/String;)Landroid/location/Location;
+    move-result-object v2
+
+    # >>> HOOK: replace real location with spoofed location
+    invoke-static {v2}, Lcom/hookengine/core/LocationInterceptor;->interceptLocation(Landroid/location/Location;)Landroid/location/Location;
+    move-result-object v2
+    # <<< END HOOK
+
+    .line 32
+    if-eqz v2, :no_location
+
+    invoke-virtual {v2}, Landroid/location/Location;->getLatitude()D
+    move-result-wide v3
+
+    return-object v2
+
+    :no_location
+    const/4 v2, 0x0
+    return-object v2
+.end method
+```
+
+**What changed:** Two lines inserted after `move-result-object v2`. The interceptor receives the real Location (or null) and returns a fake one. Same register `v2` is reused -- all downstream code now uses the fake Location. No `.locals` bump needed.
+
+**Step 4: Verify in logcat**
+```
+$ adb logcat -s LocationInterceptor
+D/LocationInterceptor: interceptLocation() -- replacing real=(null) with fake=(40.7580, -73.9855) acc=8.0m
+D/LocationInterceptor: LOCATION_DELIVERED lat=40.7580 lng=-73.9855
+D/LocationInterceptor: interceptLocation() -- replacing real=(null) with fake=(40.7580, -73.9855) acc=9.2m
+D/LocationInterceptor: LOCATION_DELIVERED lat=40.7580 lng=-73.9855
+```
+
+**If you see "Mock location detected" in the app:** The `isFromMockProvider()` patch is missing. Find and patch it separately (see Section 8).
+
+---
+
+### Example 3: Return Value Replacement -- Force Liveness Result
+
+**Scenario:** App has a method `checkLiveness()` that returns a boolean. We force it to always return `true`.
+
+**Step 1: Find the method**
+```bash
+grep -rn "checkLiveness\|isLive\|verifyLiveness\|livenessResult" decoded/smali*/
+# Result: decoded/smali_classes2/com/target/verify/LivenessChecker.smali
+grep -n "\.method.*checkLiveness" decoded/smali_classes2/com/target/verify/LivenessChecker.smali
+# Result: line 112: .method public checkLiveness(Landroid/graphics/Bitmap;)Z
+```
+
+**Step 2: Read the original**
+```smali
+# BEFORE (LivenessChecker.smali, line 112)
+.method public checkLiveness(Landroid/graphics/Bitmap;)Z
+    .locals 8
+    .param p1, "faceBitmap"
+
+    .line 45
+    invoke-virtual {p0, p1}, Lcom/target/verify/LivenessChecker;->extractFeatures(Landroid/graphics/Bitmap;)[F
+    move-result-object v0
+
+    .line 46
+    invoke-virtual {p0, v0}, Lcom/target/verify/LivenessChecker;->computeScore([F)F
+    move-result v1
+
+    .line 47
+    const v2, 0x3f5c28f6    # float 0.86 (threshold)
+    cmpl-float v3, v1, v2
+    if-gez v3, :is_live
+
+    .line 48
+    const/4 v4, 0x0
+    return v4
+
+    :is_live
+    .line 49
+    const/4 v4, 0x1
+    return v4
+.end method
+```
+
+**Step 3: Patch -- replace entire method body**
+```smali
+# AFTER (LivenessChecker.smali)
+.method public checkLiveness(Landroid/graphics/Bitmap;)Z
+    .locals 1
+
+    # >>> HOOK: force liveness to always pass
+    const/4 v0, 0x1
+    return v0
+    # <<< END HOOK
+.end method
+```
+
+**What changed:** Entire method body replaced. Original had 8 locals, complex logic, a threshold comparison. Now it's 2 instructions. `.locals` reduced to 1 (only need `v0`). This is safe because `p` registers (p0=this, p1=bitmap) are separate from `.locals`.
+
+**Step 4: Verify in logcat**
+No interceptor log here (the method is replaced, not hooked). Verify by checking the app flow:
+```
+$ adb logcat -d | grep -iE "liveness|live|spoof|face"
+D/VerifyActivity: Liveness check result: true
+D/VerifyActivity: Proceeding to next step...
+```
+
+**If the app still fails:** There may be a second liveness check (server-side, or a different code path). Search for other methods:
+```bash
+grep -rn "liveness\|isLive\|checkLive" decoded/smali*/ | grep "\.method"
+```
+
+---
+
+### Example 4: Adding Debug Logging (Diagnostic Hook)
+
+**Scenario:** You don't know what value a register holds at a specific point. Inject a log to find out.
+
+**Step 2: Read the original**
+```smali
+# BEFORE (VerifyManager.smali, line 89)
+.method public onVerificationResult(ILjava/lang/String;)V
+    .locals 3
+    .param p1, "resultCode"
+    .param p2, "message"
+
+    .line 67
+    packed-switch p1, :pswitch_data_0
+    # ... cases ...
+```
+
+**Step 3: Patch -- add logging to see resultCode and message**
+```smali
+# AFTER (VerifyManager.smali)
+.method public onVerificationResult(ILjava/lang/String;)V
+    .locals 5
+    .param p1, "resultCode"
+    .param p2, "message"
+
+    # >>> DEBUG: log the result code and message
+    const-string v3, "SmaliDebug"
+    new-instance v4, Ljava/lang/StringBuilder;
+    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v0, "onVerificationResult code="
+    invoke-virtual {v4, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v4, p1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    const-string v0, " msg="
+    invoke-virtual {v4, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v4, p2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v4
+    invoke-static {v3, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+    # <<< END DEBUG
+
+    .line 67
+    packed-switch p1, :pswitch_data_0
+    # ... cases ...
+```
+
+**What changed:** `.locals 3` bumped to `.locals 5` (need v3 and v4). Uses StringBuilder to concatenate the int `p1` and string `p2` into one log line. Registers v0 is reused for temp strings (safe because original code hasn't used v0 yet at this point -- we're at the very top).
+
+**Step 4: Verify in logcat**
+```
+$ adb logcat -s SmaliDebug
+D/SmaliDebug: onVerificationResult code=0 msg=Verification successful
+D/SmaliDebug: onVerificationResult code=3 msg=Liveness check failed: spoof detected
+```
+
+Now you know: result code 0 = success, 3 = spoof. You can patch the `packed-switch` to route code 3 to the success handler.
+
+---
+
+## 41. Troubleshooting Error Index
+
+Reverse lookup: find your error, get pointed to the right section and fix.
+
+### Crash Errors (logcat FATAL EXCEPTION)
+
+| Error in logcat | Cause | Fix | Section |
+|----------------|-------|-----|---------|
+| `java.lang.VerifyError: Rejecting class ... because it failed compile-time verification` | Smali register type conflict at branch merge point | Check register assignments on ALL paths to merge point. Use different registers or restructure. | 4, 28 |
+| `java.lang.VerifyError: register vN has type Integer but expected Reference` | Reused a register for incompatible types across branches | Use separate registers for the int and object values | 4, 37 |
+| `java.lang.VerifyError: register vN has type Undefined` | Code path where register is never assigned reaches a use point | Assign register on ALL code paths before use | 4 |
+| `java.lang.ClassNotFoundException: com.hookengine.core.FrameInterceptor` | Injected class not found in DEX | Verify `.smali` file is in correct `smali_classes*` dir, `.class` directive matches path | 15, 37 |
+| `java.lang.ClassNotFoundException: kotlin.jvm.internal.Intrinsics` | Hook code references Kotlin but app has no Kotlin runtime | Rewrite hook using only Java/Android framework classes | 37 |
+| `java.lang.NoSuchMethodError: No static method intercept(...)` | Method signature in `invoke-static` doesn't match the actual method in your injected class | Compare param types and return type character-by-character | 4, 5 |
+| `java.lang.NoClassDefFoundError: Failed resolution of: Landroidx/...` | Hook references AndroidX but app uses Support Library (or neither) | Check which library the app uses, match your references | 37 |
+| `java.lang.NullPointerException` at hook point | Register was null when hook expected a value | Add null check before passing to interceptor, or handle null in interceptor | 26 |
+| `java.lang.SecurityException: Permission denied` | Missing runtime permission | Grant via `adb shell pm grant` | 16 |
+| `java.lang.UnsatisfiedLinkError: dlopen failed` | Native lib missing or wrong architecture | Check `lib/` has the right ABI; don't delete libs unless app has fallback | 11, 36 |
+| App exits with no exception in logcat | Anti-tamper called `System.exit()` or `Process.killProcess()` | Search for exit/kill calls, nop them or patch the check | 10, 26 |
+
+### Build Errors (apktool / apksigner)
+
+| Error | Cause | Fix | Section |
+|-------|-------|-----|---------|
+| `brut.androlib.AndrolibException: brut.common.BrutException: could not exec` | apktool can't find aapt2 | Install Android SDK build-tools, ensure `aapt2` is on PATH | 1 |
+| `brut.androlib.AndrolibException: Could not decode resource` | Missing framework for system/vendor APK | `apktool if framework-res.apk` from device | 37 |
+| `Error: 9-patch image ... malformed` | 9-patch PNG corruption during decode/rebuild | Use `apktool d --no-res` if you don't need resource edits, or use same apktool version | 37 |
+| `W: invalid resource directory name` | Resource name conflict across versions | Use `apktool b --use-aapt2` or try a different apktool version | 37 |
+| `INSTALL_FAILED_UPDATE_INCOMPATIBLE` | App already installed with different signature | `adb uninstall <package>` first | 22 |
+| `INSTALL_FAILED_NO_MATCHING_ABIS` | APK has arm64 libs, emulator is x86 (or vice versa) | Use matching emulator/device architecture | 22 |
+| `INSTALL_FAILED_INVALID_APK` | APK corrupt or not properly signed | Re-run full pipeline: `apktool b` → `zipalign` → `apksigner sign` | 1, 22 |
+| `Failure [INSTALL_PARSE_FAILED_NO_CERTIFICATES]` | APK not signed or signing failed silently | Re-sign, verify with `apksigner verify -v` | 1, 37 |
+| `zipalign verification failed` after signing | Ran zipalign AFTER apksigner (wrong order) | Always: zipalign first, then apksigner | 1 |
+
+### Runtime Issues (App Runs But Hooks Don't Work)
+
+| Symptom | Cause | Fix | Section |
+|---------|-------|-----|---------|
+| No `HookEngine` entries in logcat | Bootstrap hook not firing | Verify `Application.onCreate()` patch. Check if app uses a custom Application class. | 2, 6 |
+| `FRAME_DELIVERED` count = 0 | Payload directory empty or wrong path | `adb shell ls /sdcard/poc_frames/` -- verify path matches hook code | 7, verify Phase 2 |
+| `FRAME_DELIVERED` but "no face detected" | Frame too small, wrong format, or wrong resolution | Match frame resolution to ImageAnalysis config. Face should be >30% of frame, centered. | 7, 24 |
+| `LOCATION_DELIVERED` but "mock location detected" | `isFromMockProvider()` / `isMock()` not patched | Grep for and patch mock detection methods | 8 |
+| Location coordinates wrong | Config file not found or stale | Verify `/sdcard/poc_location/config.json` content on device | 8, verify Phase 2 |
+| Sensor values causing "device anomaly" | Physics violation: accelerometer magnitude != 9.81 | Recalculate: `sqrt(x^2+y^2+z^2)` must be ~9.81 | 9, 37 |
+| Hook fires once then stops | App recreates Activity (rotation, config change) and hook state is lost | Verify hooks survive `onPause()`/`onResume()` cycle | verify Phase 6 |
+| App shows "network error" after patching | Certificate pinning blocking SDK API calls | Patch `network_security_config.xml` or nop `CertificatePinner.check()` | 10 |
+| App works on emulator but fails on device | Native lib architecture mismatch, or hardware-backed attestation fails | Test on matching device. Check if Play Integrity is device-level. | 34, 36 |
+| Patched feature flag reverts after launch | Firebase Remote Config fetches server values, overriding defaults | Nop `fetchAndActivate()` call or patch the consumption point | 38 |
+| App silently ignores injected frames | App has A/B test, using a different code path than the one you patched | Search for multiple `ImageAnalysis.Analyzer` implementations, patch ALL | 37 |
+| `FileNotFoundException: /sdcard/poc_frames/...` | Scoped storage (API 30+) blocking file access | Add `MANAGE_EXTERNAL_STORAGE` permission + `adb shell appops set` grant | 37 |
+
+### ADB / Device Issues
+
+| Symptom | Fix | Section |
+|---------|-----|---------|
+| `adb devices` shows nothing | Enable USB debugging on device. Try different USB cable/port. | 17 |
+| `adb devices` shows `offline` | `adb kill-server && adb start-server`. Accept RSA key on device. | 22 |
+| `adb devices` shows `unauthorized` | Accept the "Allow USB debugging" prompt on device screen | 17 |
+| `error: more than one device/emulator` | Specify device: `adb -s <serial> ...` | 17 |
+| `adb shell run-as <package>` fails | App not debuggable. Set `android:debuggable="true"` in manifest, rebuild. | 26 |
+| `adb push` succeeds but file not visible | File pushed to wrong location, or scoped storage hiding it. Use full path. | 37 |
+| Screen recording black screen | App has `FLAG_SECURE`. Inject `clearFlags(0x2000)` in Activity. | 16 |
+
+### Smali Editing Mistakes
+
+| Mistake | What Happens | How to Catch | Section |
+|---------|-------------|-------------|---------|
+| Bumped `.registers` instead of `.locals` | Parameter registers shift, ALL existing code breaks silently | App crashes with VerifyError or NPE. Always bump `.locals`. | 4, 37 |
+| Forgot to bump `.locals` | Register index out of bounds | VerifyError: `register vN out of range` | 4 |
+| Used `move-result` after `invoke` that returns `void` | VerifyError | Check method return type: `V` = void, no `move-result` allowed | 4 |
+| Used `move-result` instead of `move-result-object` | Type mismatch: expected Reference | `move-result` for primitives (Z, I, F), `move-result-object` for objects (L...; ) | 4 |
+| Used `move-result-wide` for non-wide type | Corrupts next register | Only use for `J` (long) and `D` (double) return types | 28 |
+| Wrote `invoke-virtual` for a `static` method | NoSuchMethodError or VerifyError | Check if method has `static` modifier. Static = `invoke-static` (no `this`). | 4 |
+| Wrote `invoke-virtual` for an `interface` method | VerifyError | If the register type is an interface, use `invoke-interface` | 4 |
+| Put injected class in wrong `smali_classes*` dir | ClassNotFoundException (usually), or works fine (ART merges all DEX) | Verify with logcat. Place in same dir as calling class to be safe. | 15, 37 |
+| Patch targets wrong method overload | Hook never fires (wrong method signature matched) | Verify full descriptor: method name + param types + return type | 6 |
+| Forgot `move-result-object` after `invoke-static` that returns an object | Next instruction reads stale register value | Interceptor fires but return value is ignored. Always pair `invoke` with `move-result`. | 5 |

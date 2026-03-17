@@ -97,7 +97,7 @@ If you use [Cursor](https://cursor.sh/), this repo ships two Agent Skills that g
 
 | Skill | What It Does |
 |-------|-------------|
-| `skills/android-red-team.md` | 38 sections of operational knowledge — recon, smali patching, injection configs, anti-tamper evasion, Kotlin patterns, and more. The agent can write patches, generate configs, and diagnose failures. |
+| `skills/android-red-team.md` | 41 sections of operational knowledge — recon, smali patching, injection configs, anti-tamper evasion, Kotlin patterns, a full one-pass recon script, worked hook examples, and a troubleshooting error index. The agent can write patches, generate configs, and diagnose failures. |
 | `skills/android-red-team-verify.md` | 8-phase post-patch verification checklist. The agent systematically checks signing, permissions, payloads, hook initialization, and evidence collection. |
 
 ```bash
