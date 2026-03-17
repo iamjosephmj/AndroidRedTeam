@@ -774,7 +774,7 @@ Use the Play Integrity API (successor to SafetyNet). See the full Kotlin impleme
 
 RASP is not a single check — it is an SDK that embeds into your app at build time and actively monitors for tampering, repackaging, debugging, and environmental anomalies at runtime. Unlike the individual defenses above (each of which an attacker can find, understand, and nop in a single smali edit), RASP bundles dozens of techniques into an obfuscated package where no single method removal disables the protection.
 
-Commercial RASP solutions include Guardsquare (DexGuard/iXGuard), Promon SHIELD, Appdome, Zimperium zShield, and Talsec freeRASP (open source). The specific implementation varies, but the techniques below are common across the category.
+Commercial and open-source RASP solutions exist across the ecosystem. The specific implementation varies by vendor, but the techniques below are common across the category.
 
 #### a) Resource Hashing and Distributed Signature Verification
 

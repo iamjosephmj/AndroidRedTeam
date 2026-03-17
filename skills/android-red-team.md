@@ -2254,7 +2254,7 @@ Obfuscated code has non-obvious gotchas:
 - **Class merging:** R8 may merge classes together. A class you see in jadx may not exist as a separate `.smali` file.
 - **Method inlining:** Small methods get inlined into callers. The method you want to hook may not exist -- its body lives inside another method.
 - **Enum unboxing:** R8 replaces enum types with ints. The `LivenessResult.LIVE` enum you see in jadx may be just `const/4 v0, 0x0` in smali.
-- **String encryption:** Some commercial obfuscators (DexGuard, iXGuard) encrypt string constants. You'll see calls like `a.b.c.d("encrypted_blob")` returning the real string at runtime.
+- **String encryption:** Some commercial obfuscators encrypt string constants. You'll see calls like `a.b.c.d("encrypted_blob")` returning the real string at runtime.
 
 ```bash
 # Detect string encryption (strings wrapped in method calls)

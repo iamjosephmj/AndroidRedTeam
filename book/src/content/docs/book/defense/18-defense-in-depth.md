@@ -336,4 +336,4 @@ Build the layers. Test the layers. Fix the layers. Repeat.
 - [Android Network Security Configuration](https://developer.android.com/privacy-and-security/security-config) -- certificate pinning via XML configuration
 - [FIDO Alliance Biometric Certification](https://fidoalliance.org/certification/biometric-component-certification/) -- biometric performance and presentation attack detection standards
 - [OWASP MASVS-RESILIENCE](https://mas.owasp.org/MASVS/09-MASVS-RESILIENCE/) -- mobile app resilience against reverse engineering and tampering
-- [freeRASP by Talsec](https://github.com/nicolgit/free-rasp) -- open-source RASP reference implementation for Android and iOS
+- [OWASP Mobile Application Security Testing Guide](https://mas.owasp.org/MASTG/) -- comprehensive mobile security testing methodology
