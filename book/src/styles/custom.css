@@ -264,7 +264,7 @@ nav.sidebar a[aria-current='true'] {
 .sl-markdown-content li::marker { color: var(--sl-color-gray-3); }
 
 :root .sl-markdown-content .sl-heading-wrapper .sl-anchor-link {
-	margin-inline-start: 0.15em;
+	margin-inline-start: 0.05em;
 }
 
 :root .sl-markdown-content .sl-heading-wrapper .sl-anchor-icon > svg {
