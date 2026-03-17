@@ -709,7 +709,7 @@ This same pattern -- `invoke-static` into the interceptor, `move-result-object` 
 | Problem | Cause | Fix |
 |---------|-------|-----|
 | `UnsupportedClassVersionError` | Java too old | Install Java 11+ |
-| `Unable to access jarfile` | Wrong path | `patch-tool.jar` is at the project root |
+| `Unable to access jarfile` | Wrong path | [`patch-tool.jar`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/patch-tool.jar) is at the project root |
 | `ANDROID_HOME not set` | SDK not found | `export ANDROID_HOME=~/Library/Android/sdk` |
 | `zipalign not found` | build-tools missing | `sdkmanager "build-tools;34.0.0"` |
 | `apktool: command not found` | Not installed | `brew install apktool` (macOS) |

@@ -123,7 +123,7 @@ Any version 2.9.0 or higher works. Version 3.0.1 is also confirmed. Older versio
 
 ## Step 5: Verify the Patch-Tool
 
-From the project root (where `patch-tool.jar` lives):
+From the project root (where [`patch-tool.jar`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/patch-tool.jar) lives):
 
 ```bash
 cd /path/to/android-red-team
@@ -135,7 +135,7 @@ java -jar patch-tool.jar --help
 The first line should show the tool name and version, followed by usage information listing all available options (`--out`, `--work-dir`, `--app-class`, etc.).
 
 **If it fails:**
-- `Unable to access jarfile` -- You are not in the project root, or `patch-tool.jar` was not built. The JAR lives at the project root, not inside `materials/`.
+- `Unable to access jarfile` -- You are not in the project root, or [`patch-tool.jar`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/patch-tool.jar) was not built. The JAR lives at the project root, not inside `materials/`.
 - `UnsupportedClassVersionError` -- Your Java is too old. Go back to Step 1.
 
 ---

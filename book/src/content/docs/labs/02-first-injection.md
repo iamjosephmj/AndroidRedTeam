@@ -9,7 +9,7 @@ description: "Patch an APK, deploy it, verify all three injection subsystems act
 
 You have a recon report that predicts exactly which hooks will fire and which will be skipped. Now you run the patch-tool, compare its output against those predictions, deploy the patched APK, and verify the injection runtime is live. By the end of this lab, you will have a weaponized APK running on your emulator with all three injection subsystems armed and the overlay operational.
 
-All commands assume you are working from the project root (where `patch-tool.jar` lives).
+All commands assume you are working from the project root (where [`patch-tool.jar`](https://github.com/iamjosephmj/AndroidRedTeam/blob/main/patch-tool.jar) lives).
 
 ---
 
