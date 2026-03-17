@@ -1,6 +1,6 @@
 ---
 title: "RASP — Runtime Application Self-Protection"
-description: "Deep dive into RASP techniques: check spraying, decoy control flows, native obfuscation, integrity-coupled processing, string encryption, and anti-debug"
+description: "Deep dive into RASP techniques: check spraying, decoy control flows, native obfuscation, integrity-coupled processing, anti-cloning, device binding, string encryption, and anti-debug"
 ---
 
 > **Implementation effort:** Low if using a commercial SDK (drop-in integration, 1-2 days). High if building custom (months of engineering). Impact: raises the per-check bypass cost from seconds to hours.
@@ -269,7 +269,112 @@ With RASP string encryption:
 
 Static analysis is useless (all strings are encrypted). Dynamic analysis on a patched build is misleading (strings decrypt to wrong values). The attacker must either find and replicate the key derivation logic or extract decrypted strings from memory on a legitimate build — both of which require significantly more effort than grepping for plaintext.
 
-## g) Anti-Debug and Environment Detection
+## h) Anti-Cloning and Device Binding
+
+Signature verification (section a) catches repackaged APKs with a different signer. But cloning attacks go further — an attacker can copy a legitimately signed APK to another device, run it inside a dual-app / parallel-space environment, or sideload it from a source other than the Play Store. RASP addresses each of these vectors.
+
+### Device binding
+
+At first launch, RASP generates a device fingerprint by combining hardware-specific values that cannot be transferred between devices:
+
+- `Settings.Secure.ANDROID_ID` — unique per app + device combination, reset on factory wipe
+- Hardware-backed Keystore attestation — a key generated in the device's TEE (Trusted Execution Environment) that cannot be exported; if the app moves to a different device, the key is gone
+- SoC-level identifiers — board name, bootloader version, radio firmware — values that differ between physical devices
+
+RASP combines these into a composite device fingerprint at install time and registers it server-side. On every subsequent launch, the fingerprint is recomputed and compared.
+
+```text
+First launch (legitimate install):
+
+  RASP engine:
+       +-- read ANDROID_ID
+       +-- generate Keystore attestation key (hardware-backed, non-exportable)
+       +-- read Build.BOARD, Build.BOOTLOADER, Build.HARDWARE
+       +-- device_fingerprint = hash(all of the above)
+       +-- register device_fingerprint with server
+
+Subsequent launch (same device):
+
+  RASP engine:
+       +-- recompute device_fingerprint
+       +-- compare against registered value --> match --> continue
+
+Clone on different device:
+
+  RASP engine:
+       +-- ANDROID_ID is different (per-device)
+       +-- Keystore key does not exist (non-exportable, stayed on original device)
+       +-- device_fingerprint = hash(different values)
+       +-- compare against registered value --> mismatch --> integrity_state = CLONED
+```
+
+The Keystore attestation key is the strongest signal. Because it is generated inside the TEE and marked non-exportable, there is no software-level mechanism to transfer it. An attacker can spoof `ANDROID_ID` (it is a Settings value), but they cannot reproduce a hardware-backed key on a different device.
+
+### Installer verification
+
+RASP checks how the app was installed on the device. A legitimate install comes from the Play Store (or an enterprise MDM). A cloned or sideloaded APK arrives via `adb install`, a file manager, or another app store.
+
+```kotlin
+val sourceInfo = packageManager.getInstallSourceInfo(packageName)
+val installer = sourceInfo.installingPackageName
+// Play Store: "com.android.vending"
+// Enterprise MDM: varies by vendor
+// Sideloaded: null or "com.google.android.packageinstaller"
+```
+
+RASP feeds the installer identity into its integrity state. If the installer is not on the allowlist, the app does not crash — it degrades silently (same pattern as integrity-coupled processing in section e). The attacker sees the app running normally but every server-side operation fails or returns degraded results.
+
+### Clone environment detection
+
+Android supports work profiles, and third-party apps like Parallel Space and Island allow users to run a second copy of any app under a separate user profile. Attackers use these to run a cloned copy alongside the original without modifying the APK at all — the same signature, same DEX, same everything — just a second instance.
+
+RASP detects clone environments through multiple signals:
+
+- **User ID check** — The primary user runs as UID 0. Work profiles and clone environments run under higher UIDs (e.g., 10, 11). RASP reads `/proc/self/cgroup` or `UserHandle.myUserId()` to detect non-primary user execution.
+- **Path anomalies** — Clone environments redirect the app's data directory. Instead of `/data/data/com.app.name/`, the app runs from `/data/user/10/com.app.name/` or a vendor-specific path. RASP checks `context.getFilesDir()` against expected patterns.
+- **Known cloner package detection** — RASP queries the package manager for known clone-app packages (`com.lbe.parallel.intl`, `com.excelliance.dualaid`, `com.ludashi.dualspace`, etc.) and flags their presence.
+- **Multiple instance detection** — RASP checks whether another process with the same package name is already running by scanning `/proc/` or using `ActivityManager.getRunningAppProcesses()`.
+
+```text
+Normal execution:
+
+  UserHandle.myUserId() = 0
+  getFilesDir() = /data/data/com.app.name/files
+  Clone packages installed: none
+  --> integrity_state unchanged
+
+
+Clone environment:
+
+  UserHandle.myUserId() = 10                      // non-primary user
+  getFilesDir() = /data/user/10/com.app.name/files // redirected path
+  Packages found: com.lbe.parallel.intl            // cloner detected
+  --> integrity_state = CLONED
+```
+
+### Composite integrity token
+
+Rather than evaluating each check independently (where an attacker can spoof them one by one), RASP combines all signals into a single opaque integrity token that only the server can validate:
+
+```text
+token = encrypt(
+    signing_cert_hash    +
+    dex_file_hashes      +
+    device_fingerprint   +
+    installer_package    +
+    user_id              +
+    timestamp            +
+    nonce_from_server
+)
+```
+
+The token is sent to the server with every sensitive API call. The server decrypts it, validates each component, and checks the timestamp/nonce against replay. No single component can be spoofed in isolation — the attacker must simultaneously produce a valid signing cert hash, correct DEX hashes, a registered device fingerprint, a legitimate installer source, and a fresh server nonce. Failing any one component silently invalidates the entire token.
+
+**For defenders:** Device binding with hardware-backed Keystore attestation is the strongest anti-cloning signal because it cannot be transferred between devices at the software level. Combine it with installer verification and clone environment detection for comprehensive coverage. Always validate the composite integrity token server-side — client-side validation can be patched out.
+
+**For red teamers assessing anti-cloning:** If the app binds to a hardware-backed Keystore key, you cannot clone it to a different device without defeating the TEE. Your options narrow to running on the original device (which limits your control) or finding the JNI bridge where the binding result is consumed and patching at that level. Installer verification is easier to spoof (patch the `getInstallSourceInfo` call), but if it feeds into a composite token validated server-side, spoofing one field is not enough.
+
+## i) Anti-Debug and Environment Detection
 
 RASP monitors for debugger attachment and non-standard execution environments using techniques that operate at the OS level:
 

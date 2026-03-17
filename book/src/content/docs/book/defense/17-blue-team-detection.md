@@ -780,6 +780,7 @@ RASP is not a single check — it is an SDK that embeds into your app at build t
 - **Native (.so) layer enforcement** — core integrity engine in compiled C/C++ with OLLVM-level obfuscation
 - **Integrity-coupled processing** — Play Integrity verdicts silently degrade processing on tampered builds (no crash, no log)
 - **Runtime string encryption** — all sensitive strings encrypted in DEX, decrypted with keys derived from signing certificate
+- **Anti-cloning and device binding** — hardware-backed Keystore attestation, installer verification, clone environment detection, and composite integrity tokens validated server-side
 - **Anti-debug and environment detection** — ptrace self-attach, timing checks, `/proc/self/status` monitoring
 
 The correct framing: RASP does not make bypass impossible. It makes bypass **expensive enough** that the attacker's cost exceeds the value of the fraud. Combined with server-side liveness (Defense 1) and Play Integrity (Defense 6), RASP creates a three-layer system where the attacker must simultaneously defeat client integrity, server challenges, and device attestation.
