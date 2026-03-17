@@ -1,0 +1,9 @@
+{
+  "accelX": 0.5,
+  "accelY": 8.0,
+  "accelZ": 5.0,
+  "gyroX": 0.02,
+  "gyroY": 0.05,
+  "gyroZ": 0.01,
+  "jitter": 0.3
+}

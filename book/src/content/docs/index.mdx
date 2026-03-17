@@ -1,0 +1,52 @@
+---
+title: Android Red Team
+description: Bytecode-level biometric bypass for Android KYC and liveness verification
+template: splash
+hero:
+  tagline: A practitioner's guide to camera injection, GPS spoofing, and sensor manipulation against Android identity verification systems.
+  actions:
+    - text: Start Reading
+      link: /book/foundations/01-threat-landscape/
+      icon: right-arrow
+    - text: Jump to Labs
+      link: /labs/00-environment-verification/
+      icon: right-arrow
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## What's Inside
+
+<CardGrid>
+	<Card title="The Book" icon="open-book">
+		18 chapters across five parts — from threat landscape through advanced evasion to defensive countermeasures. Theory, methodology, and worked examples.
+	</Card>
+	<Card title="The Labs" icon="laptop">
+		14 hands-on exercises with real APKs, concrete deliverables, and self-check scripts. Every lab maps to a book chapter.
+	</Card>
+	<Card title="The Materials Kit" icon="seti:folder">
+		Target APKs, payload configs, automation scripts, and report templates. Everything you need to run engagements.
+	</Card>
+	<Card title="Quick Reference" icon="list-format">
+		Single-page cheatsheet with every command, payload format, config schema, and troubleshooting tip.
+	</Card>
+</CardGrid>
+
+## Who Is This For
+
+This material is for security professionals conducting **authorized** testing of Android identity verification systems. Whether you're a penetration tester adding biometric bypass to your toolkit, a security engineer validating your company's KYC flow, or a developer who wants to understand how these attacks work so you can defend against them — this book gives you the methodology, tools, and practice targets.
+
+**Prerequisites:** Comfort with the command line, basic Android development concepts, and a willingness to read bytecode. No prior reverse engineering experience required — Part I covers the foundations.
+
+## The Methodology
+
+Every engagement follows the same cycle:
+
+1. **Recon** — Decode the APK, map every hookable surface
+2. **Patch** — Instrument the bytecode with the patch-tool
+3. **Configure** — Push payloads (frames, GPS configs, sensor profiles)
+4. **Execute** — Run the target flow with all injection subsystems active
+5. **Report** — Capture evidence, compute statistics, write findings
+
+You'll learn each phase independently, then combine them in full engagements against multi-step verification flows.

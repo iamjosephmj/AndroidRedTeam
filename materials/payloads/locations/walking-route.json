@@ -1,0 +1,8 @@
+{
+  "waypoints": [
+    { "latitude": 40.7580, "longitude": -73.9855, "altitude": 5.0, "accuracy": 8.0, "delayMs": 0 },
+    { "latitude": 40.7590, "longitude": -73.9850, "altitude": 5.0, "accuracy": 10.0, "delayMs": 5000 },
+    { "latitude": 40.7600, "longitude": -73.9845, "altitude": 5.0, "accuracy": 9.0, "delayMs": 10000 },
+    { "latitude": 40.7610, "longitude": -73.9840, "altitude": 5.0, "accuracy": 8.0, "delayMs": 15000 }
+  ]
+}

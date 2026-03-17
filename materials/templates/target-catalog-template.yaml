@@ -1,0 +1,42 @@
+# Target Catalog Entry
+# One entry per target APK. Used to track recon findings and engagement history.
+
+target:
+  name: ""                          # Human-readable name
+  package: ""                       # e.g., com.example.app
+  apk_file: ""                      # filename in targets/
+  version: ""                       # app version
+  date_added: ""                    # YYYY-MM-DD
+
+recon:
+  application_class: ""             # fully qualified class name
+  camera_api: ""                    # CameraX / Camera2 / Both / None
+  camera_hook_targets: []           # list of class#method
+  location_api: ""                  # Fused / Manager / None
+  location_mock_detection: false
+  sensor_types: []                  # TYPE_ACCELEROMETER, TYPE_GYROSCOPE, etc.
+  third_party_sdks: []              # ML Kit, FaceTec, etc.
+  permissions:
+    camera: false
+    fine_location: false
+    coarse_location: false
+    activity_recognition: false
+    body_sensors: false
+
+engagement:
+  difficulty: ""                    # Easy / Medium / Hard
+  steps: []                         # list of verification step names
+  payloads:
+    camera_frames: ""               # directory name
+    location_config: ""             # config filename
+    sensor_config: ""               # config filename
+  geofence_coordinates:
+    latitude: 0.0
+    longitude: 0.0
+  notes: ""
+
+history:
+  - date: ""
+    result: ""                      # PASS / FAIL
+    operator: ""
+    report_file: ""
