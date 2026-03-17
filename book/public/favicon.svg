@@ -7,8 +7,8 @@
   </defs>
   <ellipse cx="64" cy="78" rx="35" ry="32" fill="url(#g)"/>
   <ellipse cx="64" cy="46" rx="26" ry="21" fill="url(#g)"/>
-  <circle cx="52" cy="44" r="5" fill="#282a36"/>
-  <circle cx="76" cy="44" r="5" fill="#282a36"/>
+  <circle cx="52" cy="44" r="5" fill="#161616"/>
+  <circle cx="76" cy="44" r="5" fill="#161616"/>
   <line x1="46" y1="26" x2="36" y2="10" stroke="#bd93f9" stroke-width="6" stroke-linecap="round"/>
   <line x1="82" y1="26" x2="92" y2="10" stroke="#bd93f9" stroke-width="6" stroke-linecap="round"/>
   <line x1="36" y1="66" x2="18" y2="58" stroke="#ff79c6" stroke-width="6" stroke-linecap="round"/>
