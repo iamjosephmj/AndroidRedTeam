@@ -393,6 +393,37 @@ The materials kit includes [`materials/scripts/lab-health-check.sh`](https://git
 
 ---
 
+## Cursor Agent Skills
+
+If you use [Cursor](https://cursor.sh/) as your IDE, this repository ships two Agent Skills that turn the AI assistant into a hands-on red team partner. Drop them into your workspace and the agent gains the full methodology from this book -- every recon pattern, every smali technique, every payload format -- ready to use in conversation.
+
+### `android-red-team.md` -- The Full Toolkit
+
+This skill encodes 38 sections of operational knowledge: the APK repackaging pipeline, reconnaissance methodology, all three hook patterns, camera/location/sensor injection configs, anti-tamper evasion techniques, native JNI defense handling, asset manipulation, Kotlin-specific smali patterns, feature flag exploitation, split APK handling, and more. When loaded, the agent can:
+
+- Generate recon scripts tailored to a specific APK
+- Write smali patches with correct register allocation
+- Build payload configs (GPS coordinates, sensor profiles, camera frames)
+- Diagnose `VerifyError` and other common failures
+- Walk through the full engagement cycle from decode to report
+
+### `android-red-team-verify.md` -- Post-Patch Verification
+
+A rigid 8-phase verification checklist the agent follows after every patched build. It covers pre-flight checks (signing, manifest, class placement), install and permissions, payload deployment, cold launch verification, per-hook functional checks, end-to-end flow validation, evidence collection, and reproducibility testing. The agent creates a todo item for each phase and works through them systematically.
+
+### Getting Started
+
+Copy the skill files into your Cursor workspace:
+
+```bash
+cp skills/android-red-team.md .cursor/skills/
+cp skills/android-red-team-verify.md .cursor/skills/
+```
+
+Then ask the agent anything -- "decode this APK and run recon", "write a smali patch to bypass this signature check", "verify my patched build is ready for deployment." The skills give it the domain knowledge to execute like a practitioner, not just suggest.
+
+---
+
 ## What Comes Next
 
 Your lab is ready. Everything from here forward assumes you have a working emulator, a connected `adb`, and the materials unpacked. Chapter 5 begins the operational methodology: you'll learn to decode a target APK, interrogate its manifest, map its camera and location and sensor surfaces, and produce a recon report that drives the rest of the engagement. The lab is your foundation — everything you build on top of it is only as solid as this setup.
