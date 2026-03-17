@@ -1,4 +1,4 @@
-# Android Biometric Bypass
+# Android Biometric Bypass & APK Cloning
 
 APK tampering, camera injection, GPS spoofing & sensor manipulation against Android identity verification.
 
