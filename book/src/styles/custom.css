@@ -263,16 +263,9 @@ nav.sidebar a[aria-current='true'] {
 .sl-markdown-content li p { margin-bottom: 0.5rem; }
 .sl-markdown-content li::marker { color: var(--sl-color-gray-3); }
 
-.sl-heading-wrapper .sl-anchor-link {
-	margin-inline-start: 0.2em;
-	vertical-align: middle;
-	line-height: 1;
-}
-
-.sl-heading-wrapper .sl-anchor-icon svg {
-	width: 0.65em;
-	height: 0.65em;
-	vertical-align: middle;
+.sl-heading-wrapper {
+	--sl-anchor-icon-size: 0.6em;
+	--sl-anchor-icon-gap: 0.2em;
 }
 
 .sl-markdown-content > hr {
