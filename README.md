@@ -46,6 +46,8 @@ A practitioner's guide to **assessing** how identity apps consume camera frames,
     └── scripts/                      # Automation scripts (recon, batch-patch, deploy)
 ```
 
+> **`patch-tool.jar` — restricted use.** The bytecode instrumentation tool in this repository is provided **exclusively** for use with the included practice targets (`materials/targets/`), apps you build yourself, or apps you have explicit written authorization to assess. Do not use it against any other application. See [LICENSE](LICENSE) for full terms.
+
 ## The Methodology
 
 Every engagement follows the same cycle:

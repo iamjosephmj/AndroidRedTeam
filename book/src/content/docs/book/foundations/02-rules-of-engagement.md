@@ -31,7 +31,7 @@ A verbal "yeah, go ahead and test our app" from a developer is not authorization
 
 For formal engagements, the scope document expands into a Rules of Engagement (RoE) that includes:
 
-- **Testing methodology:** What tools will be used (the patch-tool, adb, specific payload types). This prevents surprise when the client's SOC detects activity.
+- **Testing methodology:** What tools will be used (the patch-tool, adb, specific payload types). This prevents surprise when the client's SOC detects activity. Note that `patch-tool.jar` is provided exclusively for use with this project's practice targets, apps you build yourself, or apps covered by your engagement agreement — it must not be used against any application without proper authorization.
 - **Communication protocol:** How to report findings during the engagement (immediately for critical issues, daily summary for others).
 - **Escalation contacts:** Who to call if something goes wrong — if you accidentally trigger a production alert, if you discover evidence of actual fraud, if a test causes unexpected behavior.
 - **Data handling:** How test data (injected frames, captured screenshots, delivery logs) will be stored, encrypted, and eventually destroyed.

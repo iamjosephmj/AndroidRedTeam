@@ -56,6 +56,24 @@ Full license text: https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ---
 
+## Tooling Restriction — patch-tool.jar
+
+The `patch-tool.jar` binary included in this repository is provided
+**exclusively for use with the practice targets and lab exercises in this
+project**. You may NOT use `patch-tool.jar` to instrument, modify, repackage,
+or analyze any application other than:
+
+- The target APKs provided in `materials/targets/`
+- Applications you have **built yourself** for local testing
+- Applications for which you hold **explicit written authorization** to assess
+
+Redistribution of `patch-tool.jar` outside the context of this repository is
+not permitted. Use of the tool against any application without proper
+authorization may violate applicable computer misuse and anti-circumvention
+laws (see Chapter 2 of the book).
+
+---
+
 ## Additional Terms — Authorized Use & Disclaimer
 
 1. **Educational and authorized use only.** This material is provided solely
