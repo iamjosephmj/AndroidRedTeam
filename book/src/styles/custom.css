@@ -269,8 +269,24 @@ nav.sidebar a[aria-current='true'] {
 	gap: 0.3em;
 }
 
+:root .sl-markdown-content .sl-heading-wrapper.level-h2 {
+	margin-top: 3.5rem;
+	margin-bottom: 1rem;
+}
+
+:root .sl-markdown-content .sl-heading-wrapper.level-h3 {
+	margin-top: 2.25rem;
+	margin-bottom: 0.75rem;
+}
+
+:root .sl-markdown-content .sl-heading-wrapper.level-h4 {
+	margin-top: 1.75rem;
+	margin-bottom: 0.5rem;
+}
+
 :root .sl-markdown-content .sl-heading-wrapper > :first-child {
 	padding-inline-end: 0;
+	margin: 0;
 }
 
 :root .sl-markdown-content .sl-heading-wrapper .sl-anchor-link {
