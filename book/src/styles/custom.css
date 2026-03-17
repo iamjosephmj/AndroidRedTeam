@@ -1,44 +1,44 @@
 /* ============================================================
-   Android Red Team — Dracula Theme
-   https://draculatheme.com/contribute
+   Android Red Team — Dracula Theme (neutral text)
+   Accent colors from Dracula, neutral grays for readability.
    ============================================================ */
 
-/* --- Dark theme (default) — Dracula palette --- */
 :root {
-	--sl-color-accent-low: #2d2240;
+	--sl-color-accent-low: #2a2035;
 	--sl-color-accent: #bd93f9;
 	--sl-color-accent-high: #e2d4f5;
+
+	/* Pure neutral text — no tint */
 	--sl-color-white: #f8f8f2;
-	--sl-color-gray-1: #f8f8f2;
-	--sl-color-gray-2: #bfbfb8;
-	--sl-color-gray-3: #6272a4;
-	--sl-color-gray-4: #44475a;
-	--sl-color-gray-5: #343746;
-	--sl-color-gray-6: #282a36;
-	--sl-color-black: #21222c;
+	--sl-color-gray-1: #e0e0e0;
+	--sl-color-gray-2: #a0a0a0;
+	--sl-color-gray-3: #707070;
+	--sl-color-gray-4: #404040;
+	--sl-color-gray-5: #2c2c2c;
+	--sl-color-gray-6: #1e1e1e;
+	--sl-color-black: #161616;
+
 	--sl-content-width: 52rem;
 
 	--dracula-pink: #ff79c6;
 	--dracula-cyan: #8be9fd;
 	--dracula-green: #50fa7b;
 	--dracula-orange: #ffb86c;
-	--dracula-red: #ff5555;
-	--dracula-yellow: #f1fa8c;
 	--dracula-purple: #bd93f9;
 }
 
-/* --- Light theme — Dracula-inspired light --- */
 :root[data-theme='light'] {
 	--sl-color-accent-low: #f3eeff;
 	--sl-color-accent: #7c3aed;
 	--sl-color-accent-high: #4c1d95;
-	--sl-color-white: #282a36;
-	--sl-color-gray-1: #282a36;
-	--sl-color-gray-2: #44475a;
-	--sl-color-gray-3: #6272a4;
-	--sl-color-gray-4: #bfbfb8;
-	--sl-color-gray-5: #e8e6f0;
-	--sl-color-gray-6: #f8f8f2;
+
+	--sl-color-white: #1a1a1a;
+	--sl-color-gray-1: #2a2a2a;
+	--sl-color-gray-2: #505050;
+	--sl-color-gray-3: #808080;
+	--sl-color-gray-4: #c0c0c0;
+	--sl-color-gray-5: #e5e5e5;
+	--sl-color-gray-6: #f5f5f5;
 	--sl-color-black: #ffffff;
 }
 
@@ -51,12 +51,11 @@ html {
 }
 
 ::selection {
-	background: rgba(189, 147, 249, 0.35);
-	color: var(--sl-color-white);
+	background: rgba(189, 147, 249, 0.3);
+	color: #fff;
 }
 
 body {
-	font-feature-settings: 'kern', 'liga';
 	-webkit-font-smoothing: antialiased;
 }
 
@@ -121,9 +120,9 @@ nav.sidebar a:hover {
 
 nav.sidebar a[aria-current='page'],
 nav.sidebar a[aria-current='true'] {
-	color: var(--sl-color-accent);
+	color: var(--dracula-purple);
 	background: var(--sl-color-accent-low);
-	border-inline-start-color: var(--sl-color-accent);
+	border-inline-start-color: var(--dracula-purple);
 	font-weight: 600;
 }
 
@@ -144,7 +143,6 @@ nav.sidebar a[aria-current='true'] {
 	letter-spacing: -0.03em;
 	line-height: 1.15;
 	margin-bottom: 1rem;
-	color: var(--sl-color-white);
 }
 
 .hero .tagline {
@@ -166,13 +164,13 @@ nav.sidebar a[aria-current='true'] {
 .hero .action.primary {
 	background: var(--dracula-purple);
 	border-color: var(--dracula-purple);
-	color: #282a36;
+	color: #161616;
 }
 
 .hero .action.primary:hover {
 	background: var(--dracula-pink);
 	border-color: var(--dracula-pink);
-	box-shadow: 0 4px 24px rgba(255, 121, 198, 0.35);
+	box-shadow: 0 4px 24px rgba(255, 121, 198, 0.3);
 	transform: translateY(-1px);
 }
 
@@ -192,7 +190,6 @@ nav.sidebar a[aria-current='true'] {
 
 .sl-markdown-content {
 	line-height: 1.75;
-	color: var(--sl-color-white);
 }
 
 .sl-markdown-content h1 {
@@ -200,7 +197,6 @@ nav.sidebar a[aria-current='true'] {
 	font-weight: 800;
 	letter-spacing: -0.02em;
 	margin-bottom: 1.5rem;
-	color: var(--sl-color-white);
 }
 
 .sl-markdown-content h2 {
@@ -208,39 +204,22 @@ nav.sidebar a[aria-current='true'] {
 	font-weight: 700;
 	margin-top: 3rem;
 	padding-bottom: 0.6rem;
-	border-bottom: 1px solid var(--sl-color-gray-4);
-	color: var(--sl-color-white);
+	border-bottom: 1px solid var(--sl-color-gray-5);
 }
 
 .sl-markdown-content h3 {
 	font-size: var(--sl-text-lg);
 	font-weight: 600;
 	margin-top: 2rem;
-	color: var(--sl-color-white);
 }
 
 .sl-markdown-content p {
 	margin-bottom: 1.25rem;
 }
 
-.sl-markdown-content a {
-	color: var(--dracula-cyan);
-	text-decoration-color: rgba(139, 233, 253, 0.3);
-	transition: text-decoration-color 0.15s ease;
-}
-
-.sl-markdown-content a:hover {
-	text-decoration-color: var(--dracula-cyan);
-}
-
-.sl-markdown-content strong {
-	color: var(--dracula-orange);
-	font-weight: 600;
-}
-
 .sl-markdown-content > hr {
 	border: none;
-	border-top: 1px solid var(--sl-color-gray-4);
+	border-top: 1px solid var(--sl-color-gray-5);
 	margin: 3rem 0;
 }
 
@@ -264,7 +243,7 @@ nav.sidebar a[aria-current='true'] {
 
 .sl-markdown-content blockquote {
 	border-inline-start: 3px solid var(--dracula-purple);
-	background: var(--sl-color-accent-low);
+	background: var(--sl-color-gray-6);
 	padding: 1rem 1.5rem;
 	border-radius: 0 0.5rem 0.5rem 0;
 	margin: 2rem 0;
@@ -272,7 +251,6 @@ nav.sidebar a[aria-current='true'] {
 
 .sl-markdown-content blockquote p {
 	margin-bottom: 0.5rem;
-	color: var(--sl-color-gray-1);
 }
 
 .sl-markdown-content blockquote p:last-child {
@@ -295,7 +273,6 @@ nav.sidebar a[aria-current='true'] {
 	font-weight: 600;
 	text-align: left;
 	white-space: nowrap;
-	color: var(--dracula-purple);
 }
 
 .sl-markdown-content th,
@@ -305,7 +282,7 @@ nav.sidebar a[aria-current='true'] {
 }
 
 .sl-markdown-content tbody tr:hover td {
-	background: var(--sl-color-accent-low);
+	background: var(--sl-color-gray-6);
 }
 
 /* ============================================================
@@ -321,13 +298,12 @@ nav.sidebar a[aria-current='true'] {
 
 .sl-markdown-content .card:hover {
 	border-color: var(--dracula-purple);
-	box-shadow: 0 2px 24px rgba(189, 147, 249, 0.1);
+	box-shadow: 0 2px 20px rgba(189, 147, 249, 0.08);
 }
 
 .sl-markdown-content .card .card-title {
 	font-size: var(--sl-text-base);
 	font-weight: 700;
-	color: var(--dracula-pink);
 }
 
 .sl-link-card {
@@ -338,7 +314,7 @@ nav.sidebar a[aria-current='true'] {
 
 .sl-link-card:hover {
 	border-color: var(--dracula-purple);
-	box-shadow: 0 4px 20px rgba(189, 147, 249, 0.12);
+	box-shadow: 0 4px 20px rgba(189, 147, 249, 0.1);
 	transform: translateY(-2px);
 }
 
@@ -348,21 +324,17 @@ nav.sidebar a[aria-current='true'] {
 
 .sl-steps > li::before {
 	background: var(--dracula-purple) !important;
-	color: #282a36 !important;
+	color: #161616 !important;
 	font-weight: 700;
 }
 
 /* ============================================================
-   ASIDES / ADMONITIONS
+   ASIDES
    ============================================================ */
 
 .starlight-aside {
 	border-radius: 0.5rem;
 	margin: 2rem 0;
-}
-
-.starlight-aside--caution {
-	border-color: var(--dracula-orange);
 }
 
 /* ============================================================
@@ -371,12 +343,7 @@ nav.sidebar a[aria-current='true'] {
 
 starlight-toc a {
 	font-size: var(--sl-text-xs);
-	color: var(--sl-color-gray-3);
 	transition: color 0.15s ease;
-}
-
-starlight-toc a:hover {
-	color: var(--sl-color-gray-1);
 }
 
 starlight-toc a[aria-current='true'] {
@@ -389,7 +356,7 @@ starlight-toc a[aria-current='true'] {
    ============================================================ */
 
 .pagination-links a {
-	border: 1px solid var(--sl-color-gray-4);
+	border: 1px solid var(--sl-color-gray-5);
 	border-radius: 0.5rem;
 	transition: border-color 0.2s ease;
 }
@@ -399,23 +366,11 @@ starlight-toc a[aria-current='true'] {
 }
 
 /* ============================================================
-   ORDERED / UNORDERED LISTS
-   ============================================================ */
-
-.sl-markdown-content li {
-	color: var(--sl-color-white);
-}
-
-.sl-markdown-content li::marker {
-	color: var(--sl-color-gray-3);
-}
-
-/* ============================================================
    FOOTER
    ============================================================ */
 
 .page-footer {
-	border-top: 1px solid var(--sl-color-gray-4);
+	border-top: 1px solid var(--sl-color-gray-5);
 	margin-top: 3rem;
 	padding-top: 1.5rem;
 }
